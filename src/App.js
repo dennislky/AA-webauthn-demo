@@ -9,6 +9,7 @@ import Grid from "@mui/material/Grid";
 import DemoSnackBar from "./components/DemoSnackBar";
 
 const InitWebAuthnCard = lazy(() => import("./features/initWebAuthn"));
+const GetWebAuthnCard = lazy(() => import("./features/getWebAuthn"));
 
 const defaultTheme = createTheme();
 export default function Dashboard() {
@@ -35,6 +36,9 @@ export default function Dashboard() {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <InitWebAuthnCard />
+              </Grid>
+              <Grid item xs={12}>
+                <GetWebAuthnCard />
               </Grid>
             </Grid>
             <DemoSnackBar />
