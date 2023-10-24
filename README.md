@@ -12,6 +12,19 @@
 7. [Server validates challenge, origin, factor, public key, prevCounter and optionally userHandle](https://webauthn-open-source.github.io/fido2-lib/Fido2Lib.html#assertionResult)
 8. Server responses to client the assertion result
 
+## Link references
+
+1. [FIDO Passkeys](https://fidoalliance.org/passkeys/)
+2. [WebAuthn Guide](https://webauthn.guide/)
+3. [Passwordless login with passkeys](https://developers.google.com/identity/passkeys)
+4. [Passkeys developer guide for relying parties](https://developers.google.com/identity/passkeys/developer-guide)
+5. [Passkey support on different platforms](https://developers.google.com/identity/passkeys/supported-environments)
+6. [Configure WebAuthn with Device Biometrics for MFA](https://auth0.com/docs/secure/multi-factor-authentication/fido-authentication-with-webauthn/configure-webauthn-device-biometrics-for-mfa)
+7. [WebAuthn Spec](https://w3c.github.io/webauthn/)
+8. [WebAuthn FIDO2 Library](https://webauthn-open-source.github.io/fido2-lib/index.html)
+9. [ECDSA mathematics explanation](https://cryptobook.nakov.com/digital-signatures/ecdsa-sign-verify-messages)
+10. [COSE parsing](https://webauthn-open-source.github.io/fido2-lib/keyUtils.js.html)
+
 ## Available Scripts
 
 In the project directory, you can run:
