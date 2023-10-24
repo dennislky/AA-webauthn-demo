@@ -1,6 +1,16 @@
-# Getting Started with Create React App
+# Getting Started with OKX AA WebAuthn Demo
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## WebAuthn Steps
+
+1. [Server returns attestation options](https://webauthn-open-source.github.io/fido2-lib/Fido2Lib.html#attestationOptions)
+2. Client create passkey per returned attestation options
+3. [Server validates challenge, origin, factor](https://webauthn-open-source.github.io/fido2-lib/Fido2Lib.html#attestationOptions)
+4. Server responses to client the attestation result
+
+5. [Server returns assertion options](https://webauthn-open-source.github.io/fido2-lib/Fido2Lib.html#assertionOptions)
+6. Client get passkey per returned assertion options
+7. [Server validates challenge, origin, factor, public key, prevCounter and optionally userHandle](https://webauthn-open-source.github.io/fido2-lib/Fido2Lib.html#assertionResult)
+8. Server responses to client the assertion result
 
 ## Available Scripts
 
@@ -38,33 +48,3 @@ If you aren't satisfied with the build tool and configuration choices, you can `
 Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
 You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
