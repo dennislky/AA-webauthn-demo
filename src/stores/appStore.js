@@ -239,7 +239,7 @@ export default class AppStore {
     /* After the assertion has been obtained, it is sent to the server for validation. 
     After the authentication data is fully validated, the signature is verified using the public key stored in the database during registration. */
     /* Verification will look different depending on the language and cryptography library used on the server. However, the general procedure remains the same.
-      The server retrieves the public key object associated with the user
+      The server retrieves the public key object associated with the user.
       The server uses the public key to verify the signature, which was generated using the authenticatorData bytes and a SHA-256 hash of the clientDataJSON. */
     // authenticatorData bytes
     const authenticatorData = credential.response.authenticatorData;
