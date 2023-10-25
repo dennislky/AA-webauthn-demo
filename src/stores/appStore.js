@@ -28,7 +28,12 @@ async function verify(data, signature, publicKey) {
     .then((key) => {
       console.log(key);
       window.crypto.subtle
-        .verify({ name: "ECDSA", hash: "SHA-256" }, key, signature, data)
+        .verify(
+          { name: "ECDSA", hash: { name: "SHA-256" } },
+          key,
+          signature,
+          data
+        )
         .then((isValid) => alert(isValid ? "Valid token" : "Invalid token"));
     });
 }
@@ -191,7 +196,7 @@ export default class AppStore {
         {
           id: this.credentialId,
           type: "public-key",
-          transports: ["ble", "nfc", "hybrid", "internal"],
+          transports: ["usb", "ble", "nfc", "hybrid", "internal"],
         },
       ],
       // timeout: Like during registration, this optionally indicates the time (in milliseconds) that the user has to respond to a prompt for authentication.
@@ -269,10 +274,11 @@ export default class AppStore {
     console.log(x, y);
     const jwk = {
       crv: "P-256",
-      ext: true,
+      // ext: true,
       kty: "EC",
       x,
       y,
+      // kid: "",
       // key_ops: ["verify"],
       // alg: "ES256",
     };

@@ -2,15 +2,23 @@
 
 ## WebAuthn Steps
 
-1. [Server returns attestation options](https://webauthn-open-source.github.io/fido2-lib/Fido2Lib.html#attestationOptions)
-2. Client create passkey per returned attestation options
-3. [Server validates challenge, origin, factor](https://webauthn-open-source.github.io/fido2-lib/Fido2Lib.html#attestationOptions)
-4. Server responses to client the attestation result
+### Create passkey
 
-5. [Server returns assertion options](https://webauthn-open-source.github.io/fido2-lib/Fido2Lib.html#assertionOptions)
-6. Client get passkey per returned assertion options
-7. [Server validates challenge, origin, factor, public key, prevCounter and optionally userHandle](https://webauthn-open-source.github.io/fido2-lib/Fido2Lib.html#assertionResult)
-8. Server responses to client the assertion result
+1. [Server returns attestation options](https://webauthn-open-source.github.io/fido2-lib/Fido2Lib.html#attestationOptions)
+2. Client send create passkey request per returned attestation options to authenticator
+3. Authenticator returns attestation result to client
+4. Client send attestation result to server
+5. [Server validates challenge, origin, factor](https://webauthn-open-source.github.io/fido2-lib/Fido2Lib.html#attestationOptions)
+6. Server responses to client the validation is successfully or not
+
+### Signing using passkey
+
+1. [Server returns assertion options](https://webauthn-open-source.github.io/fido2-lib/Fido2Lib.html#assertionOptions)
+2. Client send get passkey request per returned assertion options to authenticator
+3. Authenticator returns assertion result with signature to client
+4. Client send assertion result with signature to server
+5. [Server validates challenge, origin, factor, public key, signature, prevCounter and optionally userHandle](https://webauthn-open-source.github.io/fido2-lib/Fido2Lib.html#assertionResult)
+6. Server responses to client the validation is successfully or not
 
 ## Link references
 
