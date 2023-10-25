@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { Decoder } from "cbor-web";
 
-import { base64url } from "rfc4648";
+// import { base64url } from "rfc4648";
 
 function Uint8ArrayToBuffer(array) {
   return array.buffer.slice(
@@ -10,32 +10,53 @@ function Uint8ArrayToBuffer(array) {
   );
 }
 
-async function sha256Hash(string) {
-  const utf8 = new TextEncoder().encode(string);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", utf8);
-  // const hashArray = Array.from(new Uint8Array(hashBuffer));
-  // const hashHex = hashArray
-  //   .map((bytes) => bytes.toString(16).padStart(2, "0"))
-  //   .join("");
-  return hashBuffer;
+async function importKeyAsSPKI(publicKey) {
+  return crypto.subtle.importKey(
+    "spki",
+    publicKey,
+    {
+      name: "ECDSA",
+      namedCurve: "P-256",
+      hash: { name: "SHA-256" },
+    },
+    false,
+    ["verify"]
+  );
+}
+
+// async function importKeyAsJWK(publicKey) {
+//   return window.crypto.subtle.importKey(
+//     "jwk",
+//     publicKey,
+//     { name: "ECDSA", namedCurve: "P-256" },
+//     true,
+//     ["verify"]
+//   );
+// }
+
+function castASN1ToRawSignature(signature) {
+  // Convert signature from ASN.1 sequence to "raw" format
+  const originSignature = new Uint8Array(signature);
+  console.log("originSignature", originSignature);
+  const rStart = originSignature[4] === 0 ? 5 : 4;
+  const rEnd = rStart + 32;
+  const sStart = originSignature[rEnd + 2] === 0 ? rEnd + 3 : rEnd + 2;
+  const r = originSignature.slice(rStart, rEnd);
+  const s = originSignature.slice(sStart);
+  const rawSignature = new Uint8Array([...r, ...s]);
+  console.log("rawSignature", rawSignature);
+  return rawSignature.buffer;
 }
 
 async function verify(data, signature, publicKey) {
   return window.crypto.subtle
-    .importKey("jwk", publicKey, { name: "ECDSA", namedCurve: "P-256" }, true, [
-      "verify",
-    ])
-    .then((key) => {
-      console.log(key);
-      window.crypto.subtle
-        .verify(
-          { name: "ECDSA", hash: { name: "SHA-256" } },
-          key,
-          signature,
-          data
-        )
-        .then((isValid) => alert(isValid ? "Valid token" : "Invalid token"));
-    });
+    .verify(
+      { name: "ECDSA", hash: { name: "SHA-256" } },
+      publicKey,
+      signature,
+      data
+    )
+    .then((isValid) => alert(isValid ? "Valid token" : "Invalid token"));
 }
 
 export default class AppStore {
@@ -43,7 +64,7 @@ export default class AppStore {
   openSnackBar = false;
   snackBarMessage = "";
   isInit = false;
-  credentialId;
+  createCredential;
   publicKey;
 
   constructor(rootStore) {
@@ -54,27 +75,31 @@ export default class AppStore {
   async initialize() {
     const publicKeyCredentialCreationOptions = {
       // challenge: The challenge is a buffer of cryptographically random bytes generated on the server, and is needed to prevent "replay attacks".
-      challenge: Uint8Array.from("testing", (c) => c.charCodeAt(0)),
+      challenge: Uint8Array.from("test", (c) => c.charCodeAt(0)),
       // rp: This stands for “relying party”; it can be considered as describing the organization responsible for registering and authenticating the user.
       // The id must be a subset of the domain currently in the browser.
       rp: {
+        // id: "localhost",
         name: "OKX",
-        id: "localhost",
       },
       // user: This is information about the user currently registering. The authenticator uses the id to associate a credential with the user.
       // It is suggested to not use personally identifying information as the id, as it may be stored in an authenticator.
       user: {
-        id: Uint8Array.from("dennis.lee@okg.com", (c) => c.charCodeAt(0)),
+        id: Uint8Array.from("dennis.lee", (c) => c.charCodeAt(0)),
         name: "dennis.lee@okg.com",
         displayName: "Dennis Lee",
       },
       // pubKeyCredParams: This is an array of objects describing what public key types are acceptable to a server.
       // The alg is a number described in the COSE registry; for example, -7 indicates that the server accepts Elliptic Curve public keys using a SHA-256 signature algorithm.
-      pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+      pubKeyCredParams: [
+        { alg: -7, type: "public-key" },
+        // { alg: -257, type: "public-key" },
+      ],
       // authenticatorSelection: This optional object helps relying parties make further restrictions on the type of authenticators allowed for registration.
       // In this example we are indicating we want to register a cross-platform authenticator (like a Yubikey) instead of a platform authenticator like Windows Hello or Touch ID.
       authenticatorSelection: {
         authenticatorAttachment: "platform",
+        // userVerification: "required",
       },
       // timeout: The time (in milliseconds) that the user has to respond to a prompt for registration before an error is returned.
       timeout: 60000,
@@ -105,7 +130,8 @@ export default class AppStore {
       // It is binary data encoded in CBOR.
       type: 'public-key'
     } */
-    console.log(credential);
+    this.createCredential = credential;
+    console.log("credential", credential);
 
     // decode the clientDataJSON into a utf-8 string
     const utf8Decoder = new TextDecoder("utf-8");
@@ -124,7 +150,7 @@ export default class AppStore {
       // type: The server validates that this string is in fact "webauthn.create". If another string is provided, it indicates that the authenticator performed an incorrect operation.
       type: "webauthn.create"
     } */
-    console.log(clientDataObj);
+    console.log("clientDataObj", clientDataObj);
 
     // note: a CBOR decoder library is needed here.
     const decodedAttestationObj = Decoder.decodeFirstSync(
@@ -143,7 +169,7 @@ export default class AppStore {
           x5c: Array(1),
       },
     } */
-    console.log(decodedAttestationObj);
+    console.log("decodedAttestationObj", decodedAttestationObj);
 
     // The authData is a byte array described in the spec. Parsing it will involve slicing bytes from the array and converting them into usable objects.
     const { authData } = decodedAttestationObj;
@@ -156,11 +182,11 @@ export default class AppStore {
 
     // get the credential ID
     const credentialId = authData.slice(55, 55 + credentialIdLength);
-    this.credentialId = credentialId;
-    console.log(credentialId);
+    console.log("credentialId", credentialId);
 
     // get the public key object
     const publicKeyBytes = authData.slice(55 + credentialIdLength);
+    console.log("publicKeyBytes", publicKeyBytes);
 
     // the publicKeyBytes are encoded again as CBOR, remarks: Uint8Array.buffer != ArrayBuffer, use Uint8ArrayToBuffer method to cast it
     const publicKeyObject = Decoder.decodeFirstSync(
@@ -181,7 +207,7 @@ export default class AppStore {
       -2: Uint8Array(32) ...
       -3: Uint8Array(32) ...
     } */
-    console.log(publicKeyObject);
+    console.log("publicKeyObject", publicKeyObject);
 
     this.isInit = true;
   }
@@ -189,24 +215,26 @@ export default class AppStore {
   async getWebAuthn() {
     const publicKeyCredentialRequestOptions = {
       // challenge: Like during registration, this must be cryptographically random bytes generated on the server.
-      challenge: Uint8Array.from("testing", (c) => c.charCodeAt(0)),
+      challenge: Uint8Array.from("test", (c) => c.charCodeAt(0)),
       // allowCredentials: This array tells the browser which credentials the server would like the user to authenticate with.
       // The credentialId retrieved and saved during registration is passed in here. The server can optionally indicate what transports it prefers, like USB, NFC, and Bluetooth.
       allowCredentials: [
         {
-          id: this.credentialId,
+          id: this.createCredential.rawId,
           type: "public-key",
           transports: ["usb", "ble", "nfc", "hybrid", "internal"],
+          // transports: ["internal"],
         },
       ],
       // timeout: Like during registration, this optionally indicates the time (in milliseconds) that the user has to respond to a prompt for authentication.
       timeout: 60000,
+      // rpId: "localhost",
     };
 
     /* During authentication the user proves that they own the private key they registered with. 
       They do so by providing an assertion, which is generated by calling navigator.credentials.get() on the client. 
       This will retrieve the credential generated during registration with a signature included. */
-    const credential = await navigator.credentials.get({
+    const getCredential = await navigator.credentials.get({
       publicKey: publicKeyCredentialRequestOptions,
     });
     /* PublicKeyCredential {
@@ -229,17 +257,17 @@ export default class AppStore {
       },
       type: 'public-key'
     } */
-    console.log(credential);
+    console.log("credential", getCredential);
 
     // decode the clientDataJSON into a utf-8 string
     const utf8Decoder = new TextDecoder("utf-8");
     const decodedClientData = utf8Decoder.decode(
-      credential.response.clientDataJSON
+      getCredential.response.clientDataJSON
     );
 
     // parse the string as an object
     const clientDataObj = JSON.parse(decodedClientData);
-    console.log(clientDataObj);
+    console.log("clientDataObj", clientDataObj);
 
     /* After the assertion has been obtained, it is sent to the server for validation. 
     After the authentication data is fully validated, the signature is verified using the public key stored in the database during registration. */
@@ -247,43 +275,64 @@ export default class AppStore {
       The server retrieves the public key object associated with the user.
       The server uses the public key to verify the signature, which was generated using the authenticatorData bytes and a SHA-256 hash of the clientDataJSON. */
     // authenticatorData bytes
-    const authenticatorData = credential.response.authenticatorData;
-    console.log(authenticatorData);
+    const authenticatorData = new Uint8Array(
+      getCredential.response.authenticatorData
+    );
+    console.log("authenticatorData", authenticatorData);
 
     // SHA-256 hash of the clientDataJSON
-    const hash = await sha256Hash(credential.response.clientDataJSON);
-    console.log(hash);
+    const hash = new Uint8Array(
+      await crypto.subtle.digest(
+        "SHA-256",
+        getCredential.response.clientDataJSON
+      )
+    );
+    console.log("hash", hash);
 
     // concatenate authenticatorData and hash of the clientDataJSON
     const dataTypedArray = new Uint8Array(
-      authenticatorData.byteLength + hash.byteLength
+      authenticatorData.length + hash.length
     );
-    dataTypedArray.set(new Uint8Array(authenticatorData), 0);
-    dataTypedArray.set(new Uint8Array(hash), authenticatorData.byteLength);
-    console.log(dataTypedArray);
+    dataTypedArray.set(authenticatorData);
+    dataTypedArray.set(hash, authenticatorData.length);
+    console.log("dataTypedArray", dataTypedArray);
 
+    /*
     // cast the COSE public key object to JWK
     const publicKeyArray = Array.from(this.publicKey);
-    console.log(publicKeyArray);
+    console.log("publicKeyArray", publicKeyArray);
     const bufferX = new Uint8Array(Uint8ArrayToBuffer(publicKeyArray[3][1]));
     const bufferY = new Uint8Array(Uint8ArrayToBuffer(publicKeyArray[4][1]));
-    console.log(bufferX, bufferY);
+    console.log("coordinates buffer", bufferX, bufferY);
     // x & y coordinates of the public key are encoded as base64url in JWK (RFC-7518)
     const x = base64url.stringify(bufferX, { pad: false });
     const y = base64url.stringify(bufferY, { pad: false });
-    console.log(x, y);
+    console.log("coordinates", x, y);
     const jwk = {
       crv: "P-256",
-      // ext: true,
       kty: "EC",
       x,
       y,
+      // ext: true,
       // kid: "",
       // key_ops: ["verify"],
       // alg: "ES256",
     };
+    // cast JWK to CryptoKey
+    const publicKeyJWK = await importKeyAsJWK(jwk); 
+    console.log("publicKeyJWK", publicKeyJWK);
+    */
+    // cast SPKI to CryptoKey
+    const publicKeySPKI = await importKeyAsSPKI(
+      this.createCredential.response.getPublicKey()
+    );
+    console.log("publicKeySPKI", publicKeySPKI);
     // verify the signature is correct or not
-    await verify(dataTypedArray.buffer, credential.response.signature, jwk);
+    await verify(
+      dataTypedArray.buffer,
+      castASN1ToRawSignature(getCredential.response.signature),
+      publicKeySPKI
+    );
   }
 
   dispose() {
