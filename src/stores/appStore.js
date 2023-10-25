@@ -99,8 +99,11 @@ export default class AppStore {
       // In this example we are indicating we want to register a cross-platform authenticator (like a Yubikey) instead of a platform authenticator like Windows Hello or Touch ID.
       authenticatorSelection: {
         authenticatorAttachment: "platform",
-        // userVerification: "required",
       },
+      // authenticatorSelection: {
+      //   authenticatorAttachment: "cross-platform",
+      //   userVerification: "discouraged",
+      // },
       // timeout: The time (in milliseconds) that the user has to respond to a prompt for registration before an error is returned.
       timeout: 60000,
       // attestation: The attestation data that is returned from the authenticator has information that could be used to track users.
