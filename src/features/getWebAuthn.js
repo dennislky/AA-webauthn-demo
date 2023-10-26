@@ -3,6 +3,7 @@ import { Card, CardContent, CardActions, Typography } from "@mui/material";
 
 import { CardActionButton } from "../components/CardActionButton";
 import { useStore } from "../stores";
+import { DemoAutocompleteTransports } from "../components/DemoAutocompleteTransport";
 
 // card per feature
 const GetWebAuthnCard = () => {
@@ -13,13 +14,15 @@ const GetWebAuthnCard = () => {
   // feature logic
   const getWebAuthn = async () => {
     const result = await appStore.getWebAuthn();
-    console.log("result", result);
     if (result === true) {
       appStore.snackBarMessage = "Passkey signed successfully!";
     } else {
       appStore.snackBarMessage = `${result.toString()}`;
     }
     appStore.openSnackBar = true;
+  };
+  const setTransports = (transports) => {
+    appStore.transports = transports;
   };
 
   // render logic
@@ -32,6 +35,7 @@ const GetWebAuthnCard = () => {
           </Typography>
         </CardContent>
         <CardActions sx={{ pl: 2, pr: 2, pb: 2 }}>
+          <DemoAutocompleteTransports setTransports={setTransports} />
           <CardActionButton
             buttonText="Get Passkey"
             onClick={getWebAuthn}

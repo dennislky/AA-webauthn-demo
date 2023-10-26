@@ -8,6 +8,13 @@ import {
   castUint8ArrayToArrayBuffer,
 } from "../utils";
 
+const challenge = Uint8Array.from("test", (c) => c.charCodeAt(0));
+const user = {
+  id: Uint8Array.from("dennis.lee", (c) => c.charCodeAt(0)),
+  name: "dennis.lee@okg.com",
+  displayName: "Dennis Lee",
+};
+
 export default class AppStore {
   rootStore;
   openSnackBar = false;
@@ -16,6 +23,7 @@ export default class AppStore {
   createCredential;
   publicKey;
   attachment = "platform";
+  transports = ["internal"];
 
   constructor(rootStore) {
     makeAutoObservable(this, { rootStore: false });
@@ -25,7 +33,7 @@ export default class AppStore {
   async initialize() {
     const publicKeyCredentialCreationOptions = {
       // challenge: The challenge is a buffer of cryptographically random bytes generated on the server, and is needed to prevent "replay attacks".
-      challenge: Uint8Array.from("test", (c) => c.charCodeAt(0)),
+      challenge,
       // rp: This stands for “relying party”; it can be considered as describing the organization responsible for registering and authenticating the user.
       // The id must be a subset of the domain currently in the browser.
       rp: {
@@ -34,11 +42,7 @@ export default class AppStore {
       },
       // user: This is information about the user currently registering. The authenticator uses the id to associate a credential with the user.
       // It is suggested to not use personally identifying information as the id, as it may be stored in an authenticator.
-      user: {
-        id: Uint8Array.from("dennis.lee", (c) => c.charCodeAt(0)),
-        name: "dennis.lee@okg.com",
-        displayName: "Dennis Lee",
-      },
+      user,
       // pubKeyCredParams: This is an array of objects describing what public key types are acceptable to a server.
       // The alg is a number described in the COSE registry; for example, -7 indicates that the server accepts Elliptic Curve public keys using a SHA-256 signature algorithm.
       pubKeyCredParams: [
@@ -175,15 +179,14 @@ export default class AppStore {
   async getWebAuthn() {
     const publicKeyCredentialRequestOptions = {
       // challenge: Like during registration, this must be cryptographically random bytes generated on the server.
-      challenge: Uint8Array.from("test", (c) => c.charCodeAt(0)),
+      challenge,
       // allowCredentials: This array tells the browser which credentials the server would like the user to authenticate with.
       // The credentialId retrieved and saved during registration is passed in here. The server can optionally indicate what transports it prefers, like USB, NFC, and Bluetooth.
       allowCredentials: [
         {
           id: this.createCredential.rawId,
           type: "public-key",
-          transports: ["usb", "ble", "nfc", "hybrid", "internal"],
-          // transports: ["internal"],
+          transports: this.transports,
         },
       ],
       // timeout: Like during registration, this optionally indicates the time (in milliseconds) that the user has to respond to a prompt for authentication.

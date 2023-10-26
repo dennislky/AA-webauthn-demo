@@ -62,7 +62,7 @@ async function castPublicKeyToJWK(publicKey) {
 }
 
 function castASN1ToRawSignature(signature) {
-  // Convert signature from ASN.1 sequence to "raw" format
+  // Convert signature from ASN.1 format to raw format
   const originSignature = new Uint8Array(signature);
   console.log("originSignature", originSignature);
   const rStart = originSignature[4] === 0 ? 5 : 4;
