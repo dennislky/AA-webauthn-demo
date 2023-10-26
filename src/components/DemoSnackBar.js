@@ -13,7 +13,7 @@ const DemoSnackBar = () => {
   return (
     <Snackbar
       open={open}
-      autoHideDuration={1000}
+      autoHideDuration={3000}
       onClose={() => setOpen(false)}
       message={appStore.snackBarMessage}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}

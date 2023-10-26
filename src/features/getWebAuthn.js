@@ -11,8 +11,15 @@ const GetWebAuthnCard = () => {
   const isInit = appStore.isInit;
 
   // feature logic
-  const getWebAuthn = () => {
-    appStore.getWebAuthn();
+  const getWebAuthn = async () => {
+    const result = await appStore.getWebAuthn();
+    console.log("result", result);
+    if (result === true) {
+      appStore.snackBarMessage = "Passkey signed successfully!";
+    } else {
+      appStore.snackBarMessage = `${result.toString()}`;
+    }
+    appStore.openSnackBar = true;
   };
 
   // render logic
