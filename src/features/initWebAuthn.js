@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 
 import { Card, CardContent, CardActions, Typography } from "@mui/material";
