@@ -1,4 +1,4 @@
-import base64url from "rfc4648";
+import { base64url } from "rfc4648";
 
 function castUint8ArrayToArrayBuffer(array) {
   return array.buffer.slice(
@@ -59,6 +59,7 @@ async function castPublicKeyToJWK(publicKey) {
   // cast JWK to CryptoKey
   const publicKeyJWK = await importKeyAsJWK(jwk);
   console.log("publicKeyJWK", publicKeyJWK);
+  return publicKeyJWK;
 }
 
 function castASN1ToRawSignature(signature) {

@@ -2,10 +2,10 @@ import { makeAutoObservable } from "mobx";
 import { Decoder } from "cbor-web";
 
 import {
-  importKeyAsSPKI,
   castASN1ToRawSignature,
   verify,
   castUint8ArrayToArrayBuffer,
+  castPublicKeyToJWK,
 } from "../utils";
 
 const challenge = Uint8Array.from("test", (c) => c.charCodeAt(0));
@@ -260,17 +260,22 @@ export default class AppStore {
       dataTypedArray.set(hash, authenticatorData.length);
       console.log("dataTypedArray", dataTypedArray);
 
-      // cast SPKI to CryptoKey
-      const publicKeySPKI = await importKeyAsSPKI(
-        this.createCredential.response.getPublicKey()
-      );
-      console.log("publicKeySPKI", publicKeySPKI);
+      // // cast SPKI to CryptoKey
+      // const publicKeySPKI = await importKeyAsSPKI(
+      //   this.createCredential.response.getPublicKey()
+      // );
+      // console.log("publicKeySPKI", publicKeySPKI);
+
+      const publicKeyJWK = await castPublicKeyToJWK(this.publicKey);
+      console.log("publicKeyJWK", publicKeyJWK);
+
       // verify the signature is correct or not
       const result = await verify(
         dataTypedArray.buffer,
         castASN1ToRawSignature(getCredential.response.signature),
-        publicKeySPKI
+        publicKeyJWK
       );
+
       return result;
     } catch (err) {
       console.error(err);
