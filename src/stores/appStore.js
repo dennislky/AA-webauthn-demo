@@ -8,7 +8,11 @@ import {
   castPublicKeyToJWK,
 } from "../utils";
 
-const challenge = Uint8Array.from("test", (c) => c.charCodeAt(0));
+const challenge = new Uint8Array([
+  81, 50, 74, 28, 9, 109, 229, 71, 0, 51, 188, 87, 180, 74, 45, 170, 155, 31,
+  173, 158, 197, 49, 246, 161, 162, 230, 195, 180, 212, 250, 203, 185,
+]);
+console.log("challenge", challenge);
 const user = {
   id: Uint8Array.from("dennis.lee", (c) => c.charCodeAt(0)),
   name: "dennis.lee@okg.com",
