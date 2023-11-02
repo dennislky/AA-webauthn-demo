@@ -71,13 +71,19 @@ const SendTransactionCard = () => {
       const num = BigNumber.from(value.toString());
       const multiplier = BigNumber.from(10).pow(18);
       const valueBN = num.mul(multiplier);
-      // const callData = withdrawTo.encodeFunctionData("withdrawTo", [
-      //   target,
-      //   valueBN.toString(),
-      // ]);
-      const callData =
-        "0x095ea7b300000000000000000000000025e9548418c36f220d1d418f8503a1a4cea8e8f500000000000000000000000000000000000000000000001b1ae4d6e2ef500000";
-      accountBuilder.setCallData(callData);
+      const withdrawToCallData = withdrawTo.encodeFunctionData("withdrawTo", [
+        target,
+        valueBN.toString(),
+      ]);
+      const execute = new ethers.utils.Interface([
+        "function execute(address,uint256,bytes)",
+      ]);
+      const executeCallData = execute.encodeFunctionData("execute", [
+        "0x22C1317FE43132b22860e8b465548613d6151a9F",
+        0,
+        withdrawToCallData,
+      ]);
+      accountBuilder.setCallData(executeCallData);
 
       const response = await client.sendUserOperation(accountBuilder);
       appStore.transactions.push({ txHash: response.userOpHash });
@@ -85,7 +91,7 @@ const SendTransactionCard = () => {
       const userOperationEvent = await response.wait();
       console.log("userOperationEvent", userOperationEvent);
       if (userOperationEvent) {
-        appStore.snackBarMessage = "Account created successfully!";
+        appStore.snackBarMessage = "Transaction created successfully!";
         appStore.openSnackBar = true;
       }
     } catch (err) {
@@ -148,7 +154,7 @@ const SendTransactionCard = () => {
                     rel="noopener"
                     href={`https://dashboard.tenderly.co/tx/sepolia/${transaction.txHash}?trace=0`}
                   >
-                    {appStore.createAccountTxHash}
+                    {transaction.txHash}
                   </Link>
                 </Typography>
               )}

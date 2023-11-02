@@ -18,6 +18,7 @@ export default class AppStore {
   createAccountTxHash = "";
   accountAddress = "";
   transactions = [];
+  addRecoveryEmailTxHash = "";
 
   constructor(rootStore) {
     makeAutoObservable(this, { rootStore: false });
