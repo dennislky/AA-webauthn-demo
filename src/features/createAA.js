@@ -106,34 +106,36 @@ const CreateAACard = () => {
             loading={isLoading}
           />
         </CardActions>
-        <CardContent sx={{ pb: 1 }}>
-          {appStore.createAccountTxHash && (
-            <Typography sx={{ fontSize: 16 }}>
-              {"Transaction Details: "}
-              <Link
-                underline="always"
-                target="_blank"
-                rel="noopener"
-                href={`https://dashboard.tenderly.co/tx/sepolia/${appStore.createAccountTxHash}?trace=0`}
-              >
-                {appStore.createAccountTxHash}
-              </Link>
-            </Typography>
-          )}
-          {appStore.accountAddress && (
-            <Typography sx={{ fontSize: 16 }}>
-              {"Account Address: "}
-              <Link
-                underline="always"
-                target="_blank"
-                rel="noopener"
-                href={`https://sepolia.etherscan.io/address/${appStore.accountAddress}`}
-              >
-                {appStore.accountAddress}
-              </Link>
-            </Typography>
-          )}
-        </CardContent>
+        {appStore.createAccountTxHash && appStore.accountAddress && (
+          <CardContent sx={{ pb: 1 }}>
+            {appStore.createAccountTxHash && (
+              <Typography sx={{ fontSize: 16 }}>
+                {"Transaction Details: "}
+                <Link
+                  underline="always"
+                  target="_blank"
+                  rel="noopener"
+                  href={`https://dashboard.tenderly.co/tx/sepolia/${appStore.createAccountTxHash}?trace=0`}
+                >
+                  {appStore.createAccountTxHash}
+                </Link>
+              </Typography>
+            )}
+            {appStore.accountAddress && (
+              <Typography sx={{ fontSize: 16 }}>
+                {"Account Address: "}
+                <Link
+                  underline="always"
+                  target="_blank"
+                  rel="noopener"
+                  href={`https://sepolia.etherscan.io/address/${appStore.accountAddress}`}
+                >
+                  {appStore.accountAddress}
+                </Link>
+              </Typography>
+            )}
+          </CardContent>
+        )}
       </Card>
     </>
   ) : null;
