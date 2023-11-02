@@ -6,12 +6,13 @@ const CardActionButton = ({
   disabled = false,
   testId = "",
   loading = false,
+  sx,
 }) => {
   return (
     <LoadingButton
       size="small"
       variant="contained"
-      sx={{ backgroundColor: "black", borderRadius: 2 }}
+      sx={{ ...sx, backgroundColor: "black", borderRadius: 2 }}
       onClick={onClick}
       disabled={disabled}
       data-testid={testId}

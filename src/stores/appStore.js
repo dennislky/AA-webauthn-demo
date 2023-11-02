@@ -13,10 +13,11 @@ export default class AppStore {
   isInit = false;
   createCredential;
   publicKey;
-  attachment = "platform";
-  transports = ["internal"];
+  attachment = "auto";
+  transports = ["hybrid", "internal"];
   createAccountTxHash = "";
   accountAddress = "";
+  transactions = [];
 
   constructor(rootStore) {
     makeAutoObservable(this, { rootStore: false });
