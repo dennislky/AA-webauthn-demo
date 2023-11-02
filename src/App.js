@@ -10,6 +10,7 @@ import DemoSnackBar from "./components/DemoSnackBar";
 
 const InitWebAuthnCard = lazy(() => import("./features/initWebAuthn"));
 const GetWebAuthnCard = lazy(() => import("./features/getWebAuthn"));
+const CreateAACard = lazy(() => import("./features/createAA"));
 
 const defaultTheme = createTheme();
 export default function Dashboard() {
@@ -39,6 +40,9 @@ export default function Dashboard() {
               </Grid>
               <Grid item xs={12}>
                 <GetWebAuthnCard />
+              </Grid>
+              <Grid item xs={12}>
+                <CreateAACard />
               </Grid>
             </Grid>
             <DemoSnackBar />

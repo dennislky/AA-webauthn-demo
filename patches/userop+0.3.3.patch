@@ -1,0 +1,12 @@
+diff --git a/node_modules/userop/dist/client.js b/node_modules/userop/dist/client.js
+index a3a1ffa..e1ca8d9 100644
+--- a/node_modules/userop/dist/client.js
++++ b/node_modules/userop/dist/client.js
+@@ -49,6 +49,7 @@ class Client {
+                 : (yield this.provider.send("eth_sendUserOperation", [
+                     (0, utils_1.OpToJSON)(op),
+                     this.entryPoint.address,
++                    {type: "payg"},
+                 ]));
+             builder.resetOp();
+             return {
