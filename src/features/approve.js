@@ -12,6 +12,7 @@ import { ethers, BigNumber } from "ethers";
 
 import { CardActionButton } from "../components/CardActionButton";
 import { useStore } from "../stores";
+import { tokenApprovalAddress } from "../constants";
 
 // card per feature
 const ApprovalCard = () => {
@@ -47,7 +48,7 @@ const ApprovalCard = () => {
         "function execute(address,uint256,bytes)",
       ]);
       const executeCallData = execute.encodeFunctionData("execute", [
-        "0x22C1317FE43132b22860e8b465548613d6151a9F",
+        tokenApprovalAddress,
         0,
         approveCallData,
       ]);

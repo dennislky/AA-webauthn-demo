@@ -19,6 +19,8 @@ export const webAuthnValidatorAddress =
   "0xABEE50b081f6D7430862Beb67f64B269Ca50D8fb";
 export const accountFactoryAddress =
   "0x568Fb62bdE3a57DDaE917d5219A3D73B059402F7";
+export const tokenApprovalAddress =
+  "0x22C1317FE43132b22860e8b465548613d6151a9F";
 export const nftAddress = "0x110644b2757A536be48A2880Ea439e895260d654";
 export const sepoliaRpcUrl =
   "https://sepolia.infura.io/v3/b9794ad1ddf84dfb8c34d6bb5dca2001"; // "https://eth-sepolia.public.blastapi.io";
