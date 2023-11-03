@@ -5,7 +5,7 @@ import {
   castASN1ToRawSignature,
   verify,
   castUint8ArrayToArrayBuffer,
-  castPublicKeyToJWK,
+  castJWKObjectToCrytpoKey,
 } from "../utils";
 
 export const createPasskey = async (attachment) => {
@@ -224,7 +224,7 @@ export const authenticate = async (userOpHash, credentialId, transports) => {
   }
 };
 
-export const verifySignature = async (credential, publicKey) => {
+export const verifySignature = async (credential, jwk) => {
   try {
     // decode the clientDataJSON into a utf-8 string
     const utf8Decoder = new TextDecoder("utf-8");
@@ -257,8 +257,7 @@ export const verifySignature = async (credential, publicKey) => {
     dataTypedArray.set(hash, authenticatorData.length);
     console.log("dataTypedArray", dataTypedArray);
 
-    // cast JWK to CryptoKey
-    const publicKeyJWK = await castPublicKeyToJWK(publicKey);
+    const publicKeyJWK = await castJWKObjectToCrytpoKey(jwk);
     console.log("publicKeyJWK", publicKeyJWK);
 
     // verify the signature is correct or not

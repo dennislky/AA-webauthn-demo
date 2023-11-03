@@ -13,6 +13,9 @@ const InitWebAuthnCard = () => {
   const isInit = appStore.isInit;
 
   // feature logic
+  const setAttachment = (attachment) => {
+    appStore.attachment = attachment;
+  };
   const initWebAuthn = async () => {
     const result = await appStore.initialize();
     if (result === true) {
@@ -22,8 +25,8 @@ const InitWebAuthnCard = () => {
     }
     appStore.openSnackBar = true;
   };
-  const setAttachment = (attachment) => {
-    appStore.attachment = attachment;
+  const resetAppStore = () => {
+    appStore.reset();
   };
 
   // render logic
@@ -48,6 +51,11 @@ const InitWebAuthnCard = () => {
             buttonText="Create Passkey"
             onClick={initWebAuthn}
             testId="create-passkey"
+          />
+          <CardActionButton
+            buttonText="Reset Passkey"
+            onClick={resetAppStore}
+            testId="reset-passkey"
           />
         </CardActions>
       </Card>

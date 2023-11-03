@@ -1,5 +1,35 @@
 import { base64url } from "rfc4648";
 
+function uint8ArrayToHex(buffer) {
+  return Array.from(buffer)
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function arrayBufferToHex(buffer) {
+  return Array.from(new Uint8Array(buffer))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function hexToUint8Array(hex) {
+  const typedArray = new Uint8Array(
+    hex.match(/[\da-f]{2}/gi).map(function (h) {
+      return parseInt(h, 16);
+    })
+  );
+  return typedArray;
+}
+
+function hexToArrayBuffer(hex) {
+  const typedArray = new Uint8Array(
+    hex.match(/[\da-f]{2}/gi).map(function (h) {
+      return parseInt(h, 16);
+    })
+  );
+  return typedArray.buffer;
+}
+
 function castUint8ArrayToArrayBuffer(array) {
   return array.buffer.slice(
     array.byteOffset,
@@ -67,6 +97,13 @@ async function castPublicKeyToJWK(publicKey) {
   return publicKeyJWK;
 }
 
+async function castJWKObjectToCrytpoKey(jwk) {
+  // cast JWK to CryptoKey
+  const publicKeyJWK = await importKeyAsJWK(jwk);
+  console.log("publicKeyJWK", publicKeyJWK);
+  return publicKeyJWK;
+}
+
 function castASN1SignatureToRawRS(signature) {
   // Convert signature from ASN.1 format to raw format
   const originSignature = new Uint8Array(signature);
@@ -95,11 +132,16 @@ async function verify(data, signature, publicKey) {
 }
 
 export {
+  uint8ArrayToHex,
+  arrayBufferToHex,
+  hexToUint8Array,
+  hexToArrayBuffer,
   castUint8ArrayToArrayBuffer,
   importKeyAsJWK,
   importKeyAsSPKI,
   castPublicKeyToJWK,
   castPublicKeyToJWKObject,
+  castJWKObjectToCrytpoKey,
   castASN1ToRawSignature,
   castASN1SignatureToRawRS,
   verify,

@@ -2,7 +2,7 @@ import { BigNumber } from "ethers";
 import { arrayify, defaultAbiCoder } from "ethers/lib/utils";
 import { utils } from "@passwordless-id/webauthn";
 
-import { castASN1SignatureToRawRS, castPublicKeyToJWKObject } from "../utils";
+import { castASN1SignatureToRawRS } from "../utils";
 import { authenticate } from "../utils/webAuthn";
 
 export class WebAuthnSigner {
@@ -27,10 +27,12 @@ export class WebAuthnSigner {
   }
 
   async data() {
-    const jwk = await castPublicKeyToJWKObject(this.publicKey);
-    console.log("jwk", jwk);
-    const bufferX = Buffer.from(utils.parseBase64url(jwk.x.toString()));
-    const bufferY = Buffer.from(utils.parseBase64url(jwk.y.toString()));
+    const bufferX = Buffer.from(
+      utils.parseBase64url(this.publicKey.x.toString())
+    );
+    const bufferY = Buffer.from(
+      utils.parseBase64url(this.publicKey.y.toString())
+    );
     // console.log(bufferX, bufferY);
     return defaultAbiCoder.encode(
       ["uint256", "uint256"],

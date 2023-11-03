@@ -17,6 +17,11 @@ import {
   sepoliaRpcUrl,
   entryPointAddress,
 } from "../constants";
+import {
+  arrayBufferToHex,
+  castPublicKeyToJWKObject,
+  hexToArrayBuffer,
+} from "../utils";
 export default class AppStore {
   rootStore;
 
@@ -49,9 +54,57 @@ export default class AppStore {
 
   async initialize() {
     try {
-      const { credential, publicKey } = await createPasskey(this.attachment);
-      this.createCredential = credential;
-      this.publicKey = publicKey;
+      const passkey = localStorage.getItem("passkey");
+      if (!passkey) {
+        const { credential, publicKey } = await createPasskey(this.attachment);
+        this.createCredential = credential;
+
+        const newPublicKey = castPublicKeyToJWKObject(publicKey);
+        this.publicKey = newPublicKey;
+
+        const newCredential = {
+          id: credential.id,
+          type: credential.type,
+          rawId: arrayBufferToHex(credential.rawId),
+          response: {
+            attestationObject: arrayBufferToHex(
+              credential.response.attestationObject
+            ),
+            clientDataJSON: arrayBufferToHex(
+              credential.response.clientDataJSON
+            ),
+          },
+        };
+        localStorage.setItem(
+          `passkey:${arrayBufferToHex(credential.rawId)}`,
+          JSON.stringify({
+            credential: newCredential,
+            publicKey: newPublicKey,
+          })
+        );
+        localStorage.setItem(
+          "passkey",
+          JSON.stringify([`passkey:${arrayBufferToHex(credential.rawId)}`])
+        );
+      } else {
+        const passkeyArray = JSON.parse(passkey);
+        console.log(passkeyArray);
+        const passkeyObj = JSON.parse(localStorage.getItem(passkeyArray[0]));
+        console.log(passkeyObj);
+        this.createCredential = {
+          ...passkeyObj.credential,
+          rawId: hexToArrayBuffer(passkeyObj.credential.rawId),
+          response: {
+            attestationObject: hexToArrayBuffer(
+              passkeyObj.credential.response.attestationObject
+            ),
+            clientDataJSON: hexToArrayBuffer(
+              passkeyObj.credential.response.clientDataJSON
+            ),
+          },
+        };
+        this.publicKey = passkeyObj.publicKey;
+      }
       this.isInit = true;
       return this.isInit;
     } catch (err) {
@@ -153,7 +206,36 @@ export default class AppStore {
     return this.newAccountBuilder;
   }
 
-  dispose() {
+  reset() {
+    this.openSnackBar = false;
+    this.snackBarMessage = "";
     this.isInit = false;
+
+    this.attachment = "auto";
+    this.transports = ["hybrid", "internal"];
+    this.createCredential = undefined;
+    this.publicKey = undefined;
+
+    this.signer = undefined;
+    this.client = undefined;
+    this.initAccountBuilder = undefined;
+    this.newAccountBuilder = undefined;
+    this.createAccountTxHash = "";
+    this.accountAddress = "";
+    this.accountBalances = [];
+
+    this.approves = [];
+    this.transactions = [];
+    this.nftTransactions = [];
+    this.addRecoveryEmailTxHash = "";
+
+    const passkey = localStorage.getItem("passkey");
+    if (passkey) {
+      const passkeyArray = JSON.parse(passkey);
+      passkeyArray.forEach((key) => {
+        localStorage.removeItem(key);
+      });
+    }
+    localStorage.removeItem("passkey");
   }
 }
