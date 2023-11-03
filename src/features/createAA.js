@@ -7,9 +7,11 @@ import {
   Typography,
   Link,
 } from "@mui/material";
+import { ethers } from "ethers";
 
 import { CardActionButton } from "../components/CardActionButton";
 import { useStore } from "../stores";
+import { chainId } from "../constants";
 
 // card per feature
 const CreateAACard = () => {
@@ -32,12 +34,30 @@ const CreateAACard = () => {
       appStore.accountAddress = builder.getSender();
       appStore.createAccountTxHash = response.userOpHash;
 
-      // const userOperationEvent = await response.wait();
-      // console.log("userOperationEvent", userOperationEvent);
-      // if (userOperationEvent) {
-      //   appStore.snackBarMessage = "Account created successfully!";
-      //   appStore.openSnackBar = true;
-      // }
+      const userOperationEvent = await response.wait();
+      console.log("userOperationEvent", userOperationEvent);
+      if (userOperationEvent) {
+        appStore.snackBarMessage = "Account created successfully!";
+        appStore.openSnackBar = true;
+      }
+
+      const abi = [
+        // Read-Only Functions
+        "function balanceOf(address owner) view returns (uint256)",
+        "function decimals() view returns (uint8)",
+        "function symbol() view returns (string)",
+      ];
+      const address = "0x22C1317FE43132b22860e8b465548613d6151a9F";
+      const erc20 = new ethers.Contract(
+        address,
+        abi,
+        ethers.getDefaultProvider(chainId)
+      );
+      const balance = await erc20.balanceOf(builder.getSender());
+      appStore.accountBalances.push({
+        token: await erc20.symbol(),
+        amount: ethers.utils.formatUnits(balance, await erc20.decimals()),
+      });
     } catch (err) {
       console.error(err);
       appStore.snackBarMessage = `${err.toString()}`;
@@ -92,19 +112,15 @@ const CreateAACard = () => {
                 </Link>
               </Typography>
             )}
-            {appStore.accountBalance > 0 && (
+            {appStore.accountBalances.length ? (
               <Typography sx={{ fontSize: 16 }}>
-                {"Account Balance: "}
-                <Link
-                  underline="always"
-                  target="_blank"
-                  rel="noopener"
-                  href={`https://sepolia.etherscan.io/address/${appStore.accountAddress}`}
-                >
-                  {appStore.accountBalance}
-                </Link>
+                {`Account Balance: ${appStore.accountBalances
+                  .map((balance) => {
+                    return `${balance.amount} ${balance.token}`;
+                  })
+                  .join(", ")}`}
               </Typography>
-            )}
+            ) : null}
           </CardContent>
         )}
       </Card>

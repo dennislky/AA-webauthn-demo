@@ -35,7 +35,7 @@ export default class AppStore {
   newAccountBuilder;
   createAccountTxHash = "";
   accountAddress = "";
-  accountBalance = 0;
+  accountBalances = [];
 
   approves = [];
   transactions = [];

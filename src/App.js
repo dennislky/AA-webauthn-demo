@@ -11,8 +11,8 @@ import DemoSnackBar from "./components/DemoSnackBar";
 const InitWebAuthnCard = lazy(() => import("./features/initWebAuthn"));
 // const GetWebAuthnCard = lazy(() => import("./features/getWebAuthn"));
 const CreateAACard = lazy(() => import("./features/createAA"));
-const ApprovalCard = lazy(() => import("./features/approve"));
-const SendTransactionCard = lazy(() => import("./features/sendTransaction"));
+// const ApprovalCard = lazy(() => import("./features/approve"));
+// const SendTransactionCard = lazy(() => import("./features/sendTransaction"));
 const MintNFTCard = lazy(() => import("./features/mintNFT"));
 const EmailRecoveryCard = lazy(() => import("./features/emailRecovery"));
 
@@ -48,12 +48,12 @@ export default function Dashboard() {
               <Grid item xs={12}>
                 <CreateAACard />
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <ApprovalCard />
               </Grid>
               <Grid item xs={12}>
                 <SendTransactionCard />
-              </Grid>
+              </Grid> */}
               <Grid item xs={12}>
                 <MintNFTCard />
               </Grid>
