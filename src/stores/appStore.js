@@ -45,10 +45,11 @@ export default class AppStore {
   accountAddress = "";
   accountBalances = [];
 
-  approves = [];
+  approvals = [];
   transactions = [];
   nftTransactions = [];
   addRecoveryEmailTxHash = "";
+  recoveryEmail = "";
 
   constructor(rootStore) {
     makeAutoObservable(this, { rootStore: false });
@@ -68,6 +69,7 @@ export default class AppStore {
             alchemy: alchemyAPIKey,
           })
         : ethers.getDefaultProvider(chainId);
+    console.log("provider", this.provider);
   }
 
   async initialize() {
@@ -120,6 +122,14 @@ export default class AppStore {
           },
         };
         this.publicKey = passkeyObj.publicKey;
+
+        const accountItem = localStorage.getItem("account");
+        if (accountItem) {
+          const account = JSON.parse(accountItem);
+          console.log(account);
+          this.accountAddress = account.address;
+          this.createAccountTxHash = account.txHash;
+        }
       }
       this.isInit = true;
       return this.isInit;
@@ -222,6 +232,43 @@ export default class AppStore {
     return this.newAccountBuilder;
   }
 
+  createAccount(txHash, address) {
+    this.accountAddress = address;
+    this.createAccountTxHash = txHash;
+    localStorage.setItem("account", JSON.stringify({ address, txHash }));
+  }
+
+  updateAccountBalance(token, amount) {
+    const balance = {
+      token,
+      amount,
+    };
+    this.accountBalances.push(balance);
+  }
+
+  addApproval(txHash) {
+    this.approvals.push({ txHash });
+  }
+
+  addTransaction(txHash) {
+    this.transactions.push({ txHash });
+  }
+
+  addNFTTransaction(txHash) {
+    this.nftTransactions.push({ txHash });
+  }
+
+  addRecoveryEmail(txHash, email) {
+    this.recoveryEmail = email;
+    this.addRecoveryEmailTxHash = txHash;
+  }
+
+  showSnackBar(message) {
+    this.snackBarMessage =
+      message.length > 100 ? `${message.slice(0, 100)}...` : message;
+    this.openSnackBar = true;
+  }
+
   reset() {
     this.openSnackBar = false;
     this.snackBarMessage = "";
@@ -240,7 +287,7 @@ export default class AppStore {
     this.accountAddress = "";
     this.accountBalances = [];
 
-    this.approves = [];
+    this.approvals = [];
     this.transactions = [];
     this.nftTransactions = [];
     this.addRecoveryEmailTxHash = "";

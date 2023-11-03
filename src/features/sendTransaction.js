@@ -27,8 +27,7 @@ const SendTransactionCard = () => {
   // feature logic
   const sendTransaction = async ({ target, value }) => {
     if (!appStore.accountAddress) {
-      appStore.snackBarMessage = "Please create account first";
-      appStore.openSnackBar = true;
+      appStore.showSnackBar("Please create account first");
     }
     try {
       setIsLoading(true);
@@ -55,18 +54,16 @@ const SendTransactionCard = () => {
       builder.setCallData(executeCallData);
 
       const response = await appStore.client.sendUserOperation(builder);
-      appStore.transactions.push({ txHash: response.userOpHash });
+      appStore.addTransaction(response.userOpHash);
 
       // const userOperationEvent = await response.wait();
       // console.log("userOperationEvent", userOperationEvent);
       // if (userOperationEvent) {
-      //   appStore.snackBarMessage = "Transaction created successfully!";
-      //   appStore.openSnackBar = true;
+      //   appStore.showSnackBar("Transaction created successfully!");
       // }
     } catch (err) {
       console.error(err);
-      appStore.snackBarMessage = `${err.toString()}`;
-      appStore.openSnackBar = true;
+      appStore.showSnackBar(`${err.toString()}`);
     } finally {
       setIsLoading(false);
     }

@@ -18,12 +18,9 @@ const InitWebAuthnCard = () => {
   };
   const initWebAuthn = async () => {
     const result = await appStore.initialize();
-    if (result === true) {
-      appStore.snackBarMessage = "Passkey created successfully!";
-    } else {
-      appStore.snackBarMessage = `${result.toString()}`;
-    }
-    appStore.openSnackBar = true;
+    appStore.showSnackBar(
+      result === true ? "Passkey created successfully!" : `${result.toString()}`
+    );
   };
   const resetAppStore = () => {
     appStore.reset();

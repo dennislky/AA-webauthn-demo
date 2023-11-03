@@ -24,8 +24,7 @@ const MintNFTCard = () => {
   // feature logic
   const mintNFT = async () => {
     if (!appStore.accountAddress) {
-      appStore.snackBarMessage = "Please create account first";
-      appStore.openSnackBar = true;
+      appStore.showSnackBar("Please create account first");
     }
     try {
       setIsLoading(true);
@@ -42,13 +41,12 @@ const MintNFTCard = () => {
       builder.setCallData(executeCallData);
 
       const response = await appStore.client.sendUserOperation(builder);
-      appStore.nftTransactions.push({ txHash: response.userOpHash });
+      appStore.addNFTTransaction(response.userOpHash);
 
       const userOperationEvent = await response.wait();
       console.log("userOperationEvent", userOperationEvent);
       if (userOperationEvent) {
-        appStore.snackBarMessage = "NFT minted successfully!";
-        appStore.openSnackBar = true;
+        appStore.showSnackBar("NFT minted successfully!");
       }
 
       const receipt = await appStore.provider.getTransactionReceipt(
@@ -65,8 +63,7 @@ const MintNFTCard = () => {
       }
     } catch (err) {
       console.error(err);
-      appStore.snackBarMessage = `${err.toString()}`;
-      appStore.openSnackBar = true;
+      appStore.showSnackBar(`${err.toString()}`);
     } finally {
       setIsLoading(false);
     }

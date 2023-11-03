@@ -14,12 +14,9 @@ const GetWebAuthnCard = () => {
   // feature logic
   const getWebAuthn = async () => {
     const result = await appStore.getWebAuthn();
-    if (result === true) {
-      appStore.snackBarMessage = "Passkey signed successfully!";
-    } else {
-      appStore.snackBarMessage = `${result.toString()}`;
-    }
-    appStore.openSnackBar = true;
+    appStore.showSnackBar(
+      result === true ? "Passkey signed successfully!" : `${result.toString()}`
+    );
   };
   const setTransports = (transports) => {
     appStore.transports = transports;

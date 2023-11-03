@@ -27,8 +27,7 @@ const ApprovalCard = () => {
   // feature logic
   const approve = async ({ target, value }) => {
     if (!appStore.accountAddress) {
-      appStore.snackBarMessage = "Please create account first";
-      appStore.openSnackBar = true;
+      appStore.showSnackBar("Please create account first");
     }
     try {
       setIsLoading(true);
@@ -55,18 +54,16 @@ const ApprovalCard = () => {
       builder.setCallData(executeCallData);
 
       const response = await appStore.client.sendUserOperation(builder);
-      appStore.approves.push({ txHash: response.userOpHash });
+      appStore.addApproval(response.userOpHash);
 
       // const userOperationEvent = await response.wait();
       // console.log("userOperationEvent", userOperationEvent);
       // if (userOperationEvent) {
-      //   appStore.snackBarMessage = "Approval created successfully!";
-      //   appStore.openSnackBar = true;
+      //   appStore.showSnackBar("Approval created successfully!");
       // }
     } catch (err) {
       console.error(err);
-      appStore.snackBarMessage = `${err.toString()}`;
-      appStore.openSnackBar = true;
+      appStore.showSnackBar(`${err.toString()}`);
     } finally {
       setIsLoading(false);
     }
@@ -111,7 +108,7 @@ const ApprovalCard = () => {
             loading={isLoading}
           />
         </CardActions>
-        {appStore.approves.map((approve, index) => {
+        {appStore.approvals.map((approve, index) => {
           return (
             <CardContent sx={{ pb: 1 }} key={index}>
               {approve.txHash && (

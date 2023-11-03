@@ -27,6 +27,13 @@ export const sepoliaRpcUrl =
 export const bundlerUrl = "http://43.134.168.120:8089/rpc/bundler";
 export const paymasterUrl = "http://43.134.168.120:8089/rpc/1";
 
+export const ERC20ABI = [
+  // Read-Only Functions
+  "function balanceOf(address owner) view returns (uint256)",
+  "function decimals() view returns (uint8)",
+  "function symbol() view returns (string)",
+];
+
 export const challenge = new Uint8Array([
   81, 50, 74, 28, 9, 109, 229, 71, 0, 51, 188, 87, 180, 74, 45, 170, 155, 31,
   173, 158, 197, 49, 246, 161, 162, 230, 195, 180, 212, 250, 203, 185,

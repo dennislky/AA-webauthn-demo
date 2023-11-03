@@ -11,52 +11,48 @@ import { ethers } from "ethers";
 
 import { CardActionButton } from "../components/CardActionButton";
 import { useStore } from "../stores";
+import { ERC20ABI, chainId, tokenApprovalAddress } from "../constants";
 
 // card per feature
 const CreateAACard = () => {
   // mobx store
   const { appStore } = useStore();
   const isInit = appStore.isInit;
+  const accountAddress = appStore.accountAddress;
 
   const [isLoading, setIsLoading] = useState(false);
 
   // feature logic
   const createAccount = async () => {
-    if (!appStore.isInit) {
-      appStore.snackBarMessage = "Please create passkey first";
-      appStore.openSnackBar = true;
+    if (!isInit) {
+      appStore.showSnackBar("Please create passkey first");
     }
     try {
       setIsLoading(true);
       const builder = await appStore.getInitAccountBuilder();
       const response = await appStore.client.sendUserOperation(builder);
-      appStore.accountAddress = builder.getSender();
-      appStore.createAccountTxHash = response.userOpHash;
+      appStore.createAccount(response.userOpHash, builder.getSender());
 
       const userOperationEvent = await response.wait();
       console.log("userOperationEvent", userOperationEvent);
       if (userOperationEvent) {
-        appStore.snackBarMessage = "Account created successfully!";
-        appStore.openSnackBar = true;
+        appStore.showSnackBar("Account created successfully!");
       }
 
-      const abi = [
-        // Read-Only Functions
-        "function balanceOf(address owner) view returns (uint256)",
-        "function decimals() view returns (uint8)",
-        "function symbol() view returns (string)",
-      ];
-      const address = "0x22C1317FE43132b22860e8b465548613d6151a9F";
-      const erc20 = new ethers.Contract(address, abi, appStore.provider);
-      const balance = await erc20.balanceOf(builder.getSender());
-      appStore.accountBalances.push({
-        token: await erc20.symbol(),
-        amount: ethers.utils.formatUnits(balance, await erc20.decimals()),
-      });
+      const erc20 = new ethers.Contract(
+        tokenApprovalAddress,
+        ERC20ABI,
+        ethers.getDefaultProvider(chainId)
+      );
+      console.log("erc20 contract", erc20);
+      const balanceOf = await erc20.balanceOf(builder.getSender());
+      appStore.updateAccountBalance(
+        await erc20.symbol(),
+        ethers.utils.formatUnits(balanceOf, await erc20.decimals())
+      );
     } catch (err) {
       console.error(err);
-      appStore.snackBarMessage = `${err.toString()}`;
-      appStore.openSnackBar = true;
+      appStore.showSnackBar(`${err.toString()}`);
     } finally {
       setIsLoading(false);
     }
@@ -77,6 +73,7 @@ const CreateAACard = () => {
             onClick={createAccount}
             testId="create-account"
             loading={isLoading}
+            disabled={!!accountAddress}
           />
         </CardActions>
         {appStore.createAccountTxHash && (

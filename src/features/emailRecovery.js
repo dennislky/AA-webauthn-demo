@@ -26,8 +26,7 @@ const EmailRecoveryCard = () => {
   // feature logic
   const addRecoveryEmail = async ({ email }) => {
     if (!appStore.accountAddress) {
-      appStore.snackBarMessage = "Please create account first";
-      appStore.openSnackBar = true;
+      appStore.showSnackBar("Please create account first");
     }
     try {
       setIsLoading(true);
@@ -44,18 +43,16 @@ const EmailRecoveryCard = () => {
       builder.setCallData(executeCallData);
 
       const response = await appStore.client.sendUserOperation(builder);
-      appStore.addRecoveryEmailTxHash = response.userOpHash;
+      appStore.addRecoveryEmail(response.userOpHash, email);
 
       // const userOperationEvent = await response.wait();
       // console.log("userOperationEvent", userOperationEvent);
       // if (userOperationEvent) {
-      //   appStore.snackBarMessage = "Recovery email added successfully!";
-      //   appStore.openSnackBar = true;
+      //   appStore.showSnackBar("Recovery email added successfully!");
       // }
     } catch (err) {
       console.error(err);
-      appStore.snackBarMessage = `${err.toString()}`;
-      appStore.openSnackBar = true;
+      appStore.showSnackBar(`${err.toString()}`);
     } finally {
       setIsLoading(false);
     }
