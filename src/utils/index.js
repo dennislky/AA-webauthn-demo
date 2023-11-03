@@ -71,7 +71,6 @@ function castPublicKeyToJWKObject(publicKey) {
   const bufferY = new Uint8Array(
     castUint8ArrayToArrayBuffer(publicKeyArray[4][1])
   );
-  // console.log("coordinates buffer", bufferX, bufferY);
   // x & y coordinates of the public key are encoded as base64url in JWK (RFC-7518)
   const x = base64url.stringify(bufferX, { pad: false });
   const y = base64url.stringify(bufferY, { pad: false });
@@ -93,14 +92,12 @@ async function castPublicKeyToJWK(publicKey) {
   const jwk = castPublicKeyToJWKObject(publicKey);
   // cast JWK to CryptoKey
   const publicKeyJWK = await importKeyAsJWK(jwk);
-  console.log("publicKeyJWK", publicKeyJWK);
   return publicKeyJWK;
 }
 
 async function castJWKObjectToCrytpoKey(jwk) {
   // cast JWK to CryptoKey
   const publicKeyJWK = await importKeyAsJWK(jwk);
-  console.log("publicKeyJWK", publicKeyJWK);
   return publicKeyJWK;
 }
 

@@ -44,12 +44,25 @@ const MintNFTCard = () => {
       const response = await appStore.client.sendUserOperation(builder);
       appStore.nftTransactions.push({ txHash: response.userOpHash });
 
-      // const userOperationEvent = await response.wait();
-      // console.log("userOperationEvent", userOperationEvent);
-      // if (userOperationEvent) {
-      //   appStore.snackBarMessage = "NFT minted successfully!";
-      //   appStore.openSnackBar = true;
-      // }
+      const userOperationEvent = await response.wait();
+      console.log("userOperationEvent", userOperationEvent);
+      if (userOperationEvent) {
+        appStore.snackBarMessage = "NFT minted successfully!";
+        appStore.openSnackBar = true;
+      }
+
+      const receipt = await appStore.provider.getTransactionReceipt(
+        response.userOpHash
+      );
+      console.log("receipt", receipt);
+      if (receipt) {
+        appStore.nftTransactions = appStore.nftTransactions.map((tx) => {
+          if (tx.txHash === response.userOpHash) {
+            tx.txDoneHash = receipt.transactionHash;
+          }
+          return tx;
+        });
+      }
     } catch (err) {
       console.error(err);
       appStore.snackBarMessage = `${err.toString()}`;
@@ -88,6 +101,19 @@ const MintNFTCard = () => {
                     target="_blank"
                     rel="noopener"
                     href={`https://dashboard.tenderly.co/tx/sepolia/${transaction.txHash}?trace=0`}
+                  >
+                    {transaction.txHash}
+                  </Link>
+                </Typography>
+              )}
+              {transaction.txDoneHash && (
+                <Typography sx={{ fontSize: 16 }}>
+                  {"Transaction Logs: "}
+                  <Link
+                    underline="always"
+                    target="_blank"
+                    rel="noopener"
+                    href={`https://sepolia.etherscan.io/tx/${transaction.txDoneHash}#eventlog`}
                   >
                     {transaction.txHash}
                   </Link>

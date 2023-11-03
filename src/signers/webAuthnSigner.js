@@ -33,7 +33,6 @@ export class WebAuthnSigner {
     const bufferY = Buffer.from(
       utils.parseBase64url(this.publicKey.y.toString())
     );
-    // console.log(bufferX, bufferY);
     return defaultAbiCoder.encode(
       ["uint256", "uint256"],
       [BigNumber.from(bufferX), BigNumber.from(bufferY)]
@@ -80,7 +79,6 @@ export class WebAuthnSigner {
     if (this.shouldRemoveLeadingZero(sBytes)) {
       sBytes = sBytes.slice(1);
     }
-    // console.log(rBytes, sBytes);
     const signature = defaultAbiCoder.encode(
       ["uint256", "uint256"],
       [BigNumber.from(rBytes), BigNumber.from(sBytes)]

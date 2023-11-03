@@ -11,7 +11,6 @@ import { ethers } from "ethers";
 
 import { CardActionButton } from "../components/CardActionButton";
 import { useStore } from "../stores";
-import { chainId } from "../constants";
 
 // card per feature
 const CreateAACard = () => {
@@ -48,11 +47,7 @@ const CreateAACard = () => {
         "function symbol() view returns (string)",
       ];
       const address = "0x22C1317FE43132b22860e8b465548613d6151a9F";
-      const erc20 = new ethers.Contract(
-        address,
-        abi,
-        ethers.getDefaultProvider(chainId)
-      );
+      const erc20 = new ethers.Contract(address, abi, appStore.provider);
       const balance = await erc20.balanceOf(builder.getSender());
       appStore.accountBalances.push({
         token: await erc20.symbol(),

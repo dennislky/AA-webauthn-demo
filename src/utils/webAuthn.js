@@ -123,7 +123,6 @@ export const createPasskey = async (attachment) => {
 
     // get the public key object
     const publicKeyBytes = authData.slice(55 + credentialIdLength);
-    console.log("publicKeyBytes", publicKeyBytes);
 
     // the publicKeyBytes are encoded again as CBOR, remarks: Uint8Array.buffer != ArrayBuffer, use castUint8ArrayToArrayBuffer method to cast it
     const publicKeyObject = Decoder.decodeFirstSync(
@@ -258,7 +257,6 @@ export const verifySignature = async (credential, jwk) => {
     console.log("dataTypedArray", dataTypedArray);
 
     const publicKeyJWK = await castJWKObjectToCrytpoKey(jwk);
-    console.log("publicKeyJWK", publicKeyJWK);
 
     // verify the signature is correct or not
     const result = await verify(

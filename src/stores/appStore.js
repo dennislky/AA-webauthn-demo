@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { Client, Presets } from "userop";
 import { SmartAccount } from "smart-accounts";
+import { ethers } from "ethers";
 
 import {
   authenticate,
@@ -16,6 +17,7 @@ import {
   paymasterUrl,
   sepoliaRpcUrl,
   entryPointAddress,
+  chainId,
 } from "../constants";
 import {
   arrayBufferToHex,
@@ -34,6 +36,7 @@ export default class AppStore {
   createCredential;
   publicKey;
 
+  provider;
   signer;
   client;
   initAccountBuilder;
@@ -50,6 +53,21 @@ export default class AppStore {
   constructor(rootStore) {
     makeAutoObservable(this, { rootStore: false });
     this.rootStore = rootStore;
+    const alchemyAPIKey = process.env.REACT_APP_ALCHEMY_API_KEY;
+    const etherscanAPIKey = process.env.REACT_APP_ETHERSCAN_API_KEY;
+    console.log(
+      "alchemyAPIKey",
+      !!alchemyAPIKey,
+      "etherscanAPIKey",
+      !!etherscanAPIKey
+    );
+    this.provider =
+      alchemyAPIKey || etherscanAPIKey
+        ? ethers.getDefaultProvider(chainId, {
+            etherscan: etherscanAPIKey,
+            alchemy: alchemyAPIKey,
+          })
+        : ethers.getDefaultProvider(chainId);
   }
 
   async initialize() {
@@ -88,9 +106,7 @@ export default class AppStore {
         );
       } else {
         const passkeyArray = JSON.parse(passkey);
-        console.log(passkeyArray);
         const passkeyObj = JSON.parse(localStorage.getItem(passkeyArray[0]));
-        console.log(passkeyObj);
         this.createCredential = {
           ...passkeyObj.credential,
           rawId: hexToArrayBuffer(passkeyObj.credential.rawId),
@@ -214,8 +230,8 @@ export default class AppStore {
     this.attachment = "auto";
     this.transports = ["hybrid", "internal"];
     this.createCredential = undefined;
-    this.publicKey = undefined;
 
+    this.provider = undefined;
     this.signer = undefined;
     this.client = undefined;
     this.initAccountBuilder = undefined;
