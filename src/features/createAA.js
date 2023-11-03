@@ -67,19 +67,12 @@ const CreateAACard = () => {
       appStore.accountAddress = accountBuilder.getSender();
       appStore.createAccountTxHash = response.userOpHash;
 
-      const userOperationEvent = await response.wait();
-      console.log("userOperationEvent", userOperationEvent);
-      // base.messages.push({
-      //   text: "create account txHash: ",
-      //   link: {
-      //     text: userOperationEvent.transactionHash,
-      //     href: `https://sepolia.etherscan.io/tx/${userOperationEvent?.transactionHash}`,
-      //   },
-      // });
-      if (userOperationEvent) {
-        appStore.snackBarMessage = "Account created successfully!";
-        appStore.openSnackBar = true;
-      }
+      // const userOperationEvent = await response.wait();
+      // console.log("userOperationEvent", userOperationEvent);
+      // if (userOperationEvent) {
+      //   appStore.snackBarMessage = "Account created successfully!";
+      //   appStore.openSnackBar = true;
+      // }
     } catch (err) {
       console.error(err);
       appStore.snackBarMessage = `${err.toString()}`;
@@ -106,7 +99,7 @@ const CreateAACard = () => {
             loading={isLoading}
           />
         </CardActions>
-        {appStore.createAccountTxHash && appStore.accountAddress && (
+        {appStore.createAccountTxHash && (
           <CardContent sx={{ pb: 1 }}>
             {appStore.createAccountTxHash && (
               <Typography sx={{ fontSize: 16 }}>
@@ -131,6 +124,19 @@ const CreateAACard = () => {
                   href={`https://sepolia.etherscan.io/address/${appStore.accountAddress}`}
                 >
                   {appStore.accountAddress}
+                </Link>
+              </Typography>
+            )}
+            {appStore.accountBalance > 0 && (
+              <Typography sx={{ fontSize: 16 }}>
+                {"Account Balance: "}
+                <Link
+                  underline="always"
+                  target="_blank"
+                  rel="noopener"
+                  href={`https://sepolia.etherscan.io/address/${appStore.accountAddress}`}
+                >
+                  {appStore.accountBalance}
                 </Link>
               </Typography>
             )}

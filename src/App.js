@@ -11,7 +11,9 @@ import DemoSnackBar from "./components/DemoSnackBar";
 const InitWebAuthnCard = lazy(() => import("./features/initWebAuthn"));
 // const GetWebAuthnCard = lazy(() => import("./features/getWebAuthn"));
 const CreateAACard = lazy(() => import("./features/createAA"));
+const ApprovalCard = lazy(() => import("./features/approve"));
 const SendTransactionCard = lazy(() => import("./features/sendTransaction"));
+const MintNFTCard = lazy(() => import("./features/mintNFT"));
 const EmailRecoveryCard = lazy(() => import("./features/emailRecovery"));
 
 const defaultTheme = createTheme();
@@ -34,7 +36,7 @@ export default function Dashboard() {
         >
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Typography variant="h4" sx={{ mb: 4 }}>
-              OKX AA WebAuthn Demo
+              OKX AA Passkey Demo
             </Typography>
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -47,7 +49,13 @@ export default function Dashboard() {
                 <CreateAACard />
               </Grid>
               <Grid item xs={12}>
+                <ApprovalCard />
+              </Grid>
+              <Grid item xs={12}>
                 <SendTransactionCard />
+              </Grid>
+              <Grid item xs={12}>
+                <MintNFTCard />
               </Grid>
               <Grid item xs={12}>
                 <EmailRecoveryCard />

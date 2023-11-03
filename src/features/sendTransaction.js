@@ -65,12 +65,12 @@ const SendTransactionCard = () => {
       });
       console.log("accountBuilder", accountBuilder);
 
-      const withdrawTo = new ethers.utils.Interface([
-        "function withdrawTo(address,uint256)",
-      ]);
       const num = BigNumber.from(value.toString());
       const multiplier = BigNumber.from(10).pow(18);
       const valueBN = num.mul(multiplier);
+      const withdrawTo = new ethers.utils.Interface([
+        "function withdrawTo(address,uint256)",
+      ]);
       const withdrawToCallData = withdrawTo.encodeFunctionData("withdrawTo", [
         target,
         valueBN.toString(),
@@ -88,12 +88,12 @@ const SendTransactionCard = () => {
       const response = await client.sendUserOperation(accountBuilder);
       appStore.transactions.push({ txHash: response.userOpHash });
 
-      const userOperationEvent = await response.wait();
-      console.log("userOperationEvent", userOperationEvent);
-      if (userOperationEvent) {
-        appStore.snackBarMessage = "Transaction created successfully!";
-        appStore.openSnackBar = true;
-      }
+      // const userOperationEvent = await response.wait();
+      // console.log("userOperationEvent", userOperationEvent);
+      // if (userOperationEvent) {
+      //   appStore.snackBarMessage = "Transaction created successfully!";
+      //   appStore.openSnackBar = true;
+      // }
     } catch (err) {
       console.error(err);
       appStore.snackBarMessage = `${err.toString()}`;

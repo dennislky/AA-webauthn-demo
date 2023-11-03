@@ -83,12 +83,12 @@ const EmailRecoveryCard = () => {
       const response = await client.sendUserOperation(accountBuilder);
       appStore.addRecoveryEmailTxHash = response.userOpHash;
 
-      const userOperationEvent = await response.wait();
-      console.log("userOperationEvent", userOperationEvent);
-      if (userOperationEvent) {
-        appStore.snackBarMessage = "Recovery email added successfully!";
-        appStore.openSnackBar = true;
-      }
+      // const userOperationEvent = await response.wait();
+      // console.log("userOperationEvent", userOperationEvent);
+      // if (userOperationEvent) {
+      //   appStore.snackBarMessage = "Recovery email added successfully!";
+      //   appStore.openSnackBar = true;
+      // }
     } catch (err) {
       console.error(err);
       appStore.snackBarMessage = `${err.toString()}`;

@@ -17,7 +17,10 @@ export default class AppStore {
   transports = ["hybrid", "internal"];
   createAccountTxHash = "";
   accountAddress = "";
+  accountBalance = 0;
+  approves = [];
   transactions = [];
+  nftTransactions = [];
   addRecoveryEmailTxHash = "";
 
   constructor(rootStore) {
