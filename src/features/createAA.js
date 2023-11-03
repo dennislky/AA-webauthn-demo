@@ -7,20 +7,9 @@ import {
   Typography,
   Link,
 } from "@mui/material";
-import { Client, Presets } from "userop";
-import { SmartAccount } from "smart-accounts";
 
 import { CardActionButton } from "../components/CardActionButton";
 import { useStore } from "../stores";
-import { WebAuthnSigner } from "./signers/webAuthnSigner";
-import {
-  bundlerUrl,
-  webAuthnValidatorAddress,
-  accountFactoryAddress,
-  paymasterUrl,
-  sepoliaRpcUrl,
-  entryPointAddress,
-} from "../constants";
 
 // card per feature
 const CreateAACard = () => {
@@ -38,33 +27,9 @@ const CreateAACard = () => {
     }
     try {
       setIsLoading(true);
-      const signer = new WebAuthnSigner(
-        appStore.transports,
-        webAuthnValidatorAddress,
-        appStore.createCredential,
-        appStore.publicKey
-      );
-
-      const client = await Client.init(sepoliaRpcUrl, {
-        entryPoint: entryPointAddress,
-        overrideBundlerRpc: bundlerUrl,
-      });
-      const accountBuilder = await SmartAccount.init(signer, sepoliaRpcUrl, {
-        overrideBundlerRpc: bundlerUrl,
-        entryPoint: entryPointAddress,
-        factory: accountFactoryAddress,
-        paymasterMiddleware: Presets.Middleware.verifyingPaymaster(
-          paymasterUrl,
-          {
-            type: "payg",
-          }
-        ),
-      });
-      console.log("accountBuilder", accountBuilder);
-
-      // cannot use bundler, need send data to entrypoint yourself
-      const response = await client.sendUserOperation(accountBuilder);
-      appStore.accountAddress = accountBuilder.getSender();
+      const builder = await appStore.getInitAccountBuilder();
+      const response = await appStore.client.sendUserOperation(builder);
+      appStore.accountAddress = builder.getSender();
       appStore.createAccountTxHash = response.userOpHash;
 
       // const userOperationEvent = await response.wait();

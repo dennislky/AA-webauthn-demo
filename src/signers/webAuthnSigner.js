@@ -2,11 +2,8 @@ import { BigNumber } from "ethers";
 import { arrayify, defaultAbiCoder } from "ethers/lib/utils";
 import { utils } from "@passwordless-id/webauthn";
 
-import {
-  castASN1SignatureToRawRS,
-  castPublicKeyToJWKObject,
-} from "../../utils";
-import { authenticate } from "../../utils/webAuthn";
+import { castASN1SignatureToRawRS, castPublicKeyToJWKObject } from "../utils";
+import { authenticate } from "../utils/webAuthn";
 
 export class WebAuthnSigner {
   transports;

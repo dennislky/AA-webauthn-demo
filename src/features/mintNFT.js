@@ -7,22 +7,11 @@ import {
   Typography,
   Link,
 } from "@mui/material";
-import { Client, Presets } from "userop";
-import { SmartAccount } from "smart-accounts";
 import { ethers } from "ethers";
 
 import { CardActionButton } from "../components/CardActionButton";
 import { useStore } from "../stores";
-import { WebAuthnSigner } from "./signers/webAuthnSigner";
-import {
-  bundlerUrl,
-  webAuthnValidatorAddress,
-  accountFactoryAddress,
-  paymasterUrl,
-  sepoliaRpcUrl,
-  entryPointAddress,
-  nftAddress,
-} from "../constants";
+import { nftAddress } from "../constants";
 
 // card per feature
 const MintNFTCard = () => {
@@ -40,28 +29,7 @@ const MintNFTCard = () => {
     }
     try {
       setIsLoading(true);
-      const signer = new WebAuthnSigner(
-        appStore.transports,
-        webAuthnValidatorAddress,
-        appStore.createCredential,
-        appStore.publicKey
-      );
-      const client = await Client.init(sepoliaRpcUrl, {
-        entryPoint: entryPointAddress,
-        overrideBundlerRpc: bundlerUrl,
-      });
-      const accountBuilder = await SmartAccount.init(signer, sepoliaRpcUrl, {
-        overrideBundlerRpc: bundlerUrl,
-        entryPoint: entryPointAddress,
-        factory: accountFactoryAddress,
-        paymasterMiddleware: Presets.Middleware.verifyingPaymaster(
-          paymasterUrl,
-          {
-            type: "payg",
-          }
-        ),
-      });
-      console.log("accountBuilder", accountBuilder);
+      const builder = await appStore.getNewAccountBuilder();
 
       const execute = new ethers.utils.Interface([
         "function execute(address,uint256,bytes)",
@@ -71,9 +39,9 @@ const MintNFTCard = () => {
         0,
         "0x1249c58b",
       ]);
-      accountBuilder.setCallData(executeCallData);
+      builder.setCallData(executeCallData);
 
-      const response = await client.sendUserOperation(accountBuilder);
+      const response = await appStore.client.sendUserOperation(builder);
       appStore.nftTransactions.push({ txHash: response.userOpHash });
 
       // const userOperationEvent = await response.wait();
