@@ -23,7 +23,7 @@ const MintNFTCard = () => {
 
   // feature logic
   const mintNFT = async () => {
-    if (!appStore.accountAddress) {
+    if (!accountAddress) {
       appStore.showSnackBar("Please create account first");
     }
     try {

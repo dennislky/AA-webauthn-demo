@@ -114,7 +114,7 @@ export class WebAuthnSigner {
         this.credentialId,
       ]
     );
-    console.log("data", data);
+    console.log("sign data", data);
     return data;
   }
 }

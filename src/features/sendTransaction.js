@@ -26,7 +26,7 @@ const SendTransactionCard = () => {
 
   // feature logic
   const sendTransaction = async ({ target, value }) => {
-    if (!appStore.accountAddress) {
+    if (!accountAddress) {
       appStore.showSnackBar("Please create account first");
     }
     try {

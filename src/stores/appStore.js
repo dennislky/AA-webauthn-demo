@@ -76,7 +76,7 @@ export default class AppStore {
           : ethers.getDefaultProvider(chainId);
       console.log("provider", this.provider);
 
-      const passkey = localStorage.getItem("passkey");
+      const passkey = sessionStorage.getItem("passkey");
       if (!passkey) {
         const { credential, publicKey } = await createPasskey(this.attachment);
         this.createCredential = credential;
@@ -98,20 +98,20 @@ export default class AppStore {
             ),
           },
         };
-        localStorage.setItem(
+        sessionStorage.setItem(
           `passkey:${this.createCredentialId}`,
           JSON.stringify({
             credential: newCredential,
             publicKey: newPublicKey,
           })
         );
-        localStorage.setItem(
+        sessionStorage.setItem(
           "passkey",
           JSON.stringify([`passkey:${this.createCredentialId}`])
         );
       } else {
         const passkeyArray = JSON.parse(passkey);
-        const passkeyObj = JSON.parse(localStorage.getItem(passkeyArray[0]));
+        const passkeyObj = JSON.parse(sessionStorage.getItem(passkeyArray[0]));
         this.createCredential = {
           ...passkeyObj.credential,
           rawId: hexToArrayBuffer(passkeyObj.credential.rawId),
@@ -126,14 +126,21 @@ export default class AppStore {
         };
         this.createCredentialId = passkeyObj.credential.rawId;
         this.publicKey = passkeyObj.publicKey;
+      }
+      const accountItem = localStorage.getItem("account");
+      if (accountItem) {
+        const account = JSON.parse(accountItem);
+        console.log("account", account);
+        this.accountAddress = account.address;
+        this.createAccountTxHash = account.txHash;
+      }
 
-        const accountItem = localStorage.getItem("account");
-        if (accountItem) {
-          const account = JSON.parse(accountItem);
-          console.log("account", account);
-          this.accountAddress = account.address;
-          this.createAccountTxHash = account.txHash;
-        }
+      const accountEmail = localStorage.getItem("account:email");
+      if (accountEmail) {
+        const email = JSON.parse(accountEmail);
+        console.log("accountEmail", email);
+        this.recoveryEmail = email.email;
+        this.addRecoveryEmailTxHash = email.txHash;
       }
       this.isInit = true;
       return this.isInit;
@@ -272,6 +279,7 @@ export default class AppStore {
   addRecoveryEmail(txHash, email) {
     this.recoveryEmail = email;
     this.addRecoveryEmailTxHash = txHash;
+    localStorage.setItem("account:email", JSON.stringify({ email, txHash }));
   }
 
   showSnackBar(message) {
@@ -303,13 +311,13 @@ export default class AppStore {
     this.nftTransactions = [];
     this.addRecoveryEmailTxHash = "";
 
-    const passkey = localStorage.getItem("passkey");
+    const passkey = sessionStorage.getItem("passkey");
     if (passkey) {
       const passkeyArray = JSON.parse(passkey);
       passkeyArray.forEach((key) => {
-        localStorage.removeItem(key);
+        sessionStorage.removeItem(key);
       });
     }
-    localStorage.removeItem("passkey");
+    sessionStorage.removeItem("passkey");
   }
 }

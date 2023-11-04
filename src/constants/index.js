@@ -15,7 +15,8 @@ export const transportOptions = [
 // sepolia network
 export const chainId = 11155111;
 export const entryPointAddress = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
-export const webAuthnValidatorAddress = "0x1c33cc9704d1d7C929ab206249A8929D51496F5b";
+export const webAuthnValidatorAddress =
+  "0x0a35a307F986cF81260c751dD5B2ca562fB2C967";
 export const accountFactoryAddress =
   "0x568Fb62bdE3a57DDaE917d5219A3D73B059402F7";
 export const tokenApprovalAddress =

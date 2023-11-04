@@ -26,7 +26,7 @@ const EmailRecoveryCard = () => {
 
   // feature logic
   const addRecoveryEmail = async ({ email }) => {
-    if (!appStore.accountAddress) {
+    if (!accountAddress) {
       appStore.showSnackBar("Please create account first");
     }
     try {
@@ -53,11 +53,12 @@ const EmailRecoveryCard = () => {
         "bindEmail",
         [callData]
       );
+      console.log("bindEmailCallData", bindEmailCallData);
       const execute = new ethers.utils.Interface([
         "function execute(address,uint256,bytes)",
       ]);
       const executeCallData = execute.encodeFunctionData("execute", [
-        webAuthnValidatorAddress, // entryPointAddress,
+        webAuthnValidatorAddress,
         0,
         bindEmailCallData,
       ]);
@@ -105,7 +106,7 @@ const EmailRecoveryCard = () => {
                 email,
               })
             }
-            testId="send-transaction"
+            testId="add-recovery-email"
             loading={isLoading}
           />
         </CardActions>

@@ -15,6 +15,9 @@ const CreateAACard = lazy(() => import("./features/createAA"));
 // const SendTransactionCard = lazy(() => import("./features/sendTransaction"));
 const MintNFTCard = lazy(() => import("./features/mintNFT"));
 const EmailRecoveryCard = lazy(() => import("./features/emailRecovery"));
+const SendRecoveryEmailCard = lazy(() =>
+  import("./features/sendRecoveryEmail")
+);
 
 const defaultTheme = createTheme();
 export default function Dashboard() {
@@ -59,6 +62,9 @@ export default function Dashboard() {
               </Grid>
               <Grid item xs={12}>
                 <EmailRecoveryCard />
+              </Grid>
+              <Grid item xs={12}>
+                <SendRecoveryEmailCard />
               </Grid>
             </Grid>
             <DemoSnackBar />
