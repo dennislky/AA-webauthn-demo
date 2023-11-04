@@ -2,24 +2,27 @@ import { BigNumber } from "ethers";
 import { arrayify, defaultAbiCoder } from "ethers/lib/utils";
 import { utils } from "@passwordless-id/webauthn";
 
-import { castASN1SignatureToRawRS } from "../utils";
+import { castASN1SignatureToRawRS, uint8ArrayToHex } from "../utils";
 import { authenticate } from "../utils/webAuthn";
 
 export class WebAuthnSigner {
   transports;
   addr;
   credential;
+  credentialId;
   publicKey;
 
-  constructor(transports, address, credential, publicKey) {
+  constructor(transports, address, credential, credentialId, publicKey) {
+    console.log("credentialId", credentialId);
     this.transports = transports;
     this.addr = address;
     this.credential = credential;
+    this.credentialId = credentialId;
     this.publicKey = publicKey;
   }
 
   signatureLength() {
-    return 1280;
+    return 1152;
   }
 
   address() {
@@ -33,10 +36,15 @@ export class WebAuthnSigner {
     const bufferY = Buffer.from(
       utils.parseBase64url(this.publicKey.y.toString())
     );
-    return defaultAbiCoder.encode(
+    const bytes = defaultAbiCoder.encode(
       ["uint256", "uint256"],
       [BigNumber.from(bufferX), BigNumber.from(bufferY)]
     );
+    const data = defaultAbiCoder.encode(
+      ["bytes", "string", "string"],
+      [bytes, this.credentialId, ""]
+    );
+    return data;
   }
 
   shouldRemoveLeadingZero(bytes) {
@@ -84,10 +92,29 @@ export class WebAuthnSigner {
       [BigNumber.from(rBytes), BigNumber.from(sBytes)]
     );
 
-    console.log(signature, authenticatorData, challengePrefix, challengeSuffix);
-    return defaultAbiCoder.encode(
-      ["bytes", "bytes", "string", "string"],
-      [signature, authenticatorData, challengePrefix, challengeSuffix]
+    console.log(
+      "signature",
+      signature,
+      "authenticatorData",
+      uint8ArrayToHex(authenticatorData),
+      "challengePrefix",
+      challengePrefix,
+      "challengeSuffix",
+      challengeSuffix,
+      "credentialId",
+      this.credentialId
     );
+    const data = defaultAbiCoder.encode(
+      ["bytes", "bytes", "string", "string", "string"],
+      [
+        signature,
+        authenticatorData,
+        challengePrefix,
+        challengeSuffix,
+        this.credentialId,
+      ]
+    );
+    console.log("data", data);
+    return data;
   }
 }

@@ -11,7 +11,7 @@ import { ethers } from "ethers";
 
 import { CardActionButton } from "../components/CardActionButton";
 import { useStore } from "../stores";
-import { ERC20ABI, chainId, tokenApprovalAddress } from "../constants";
+import { ERC20ABI, tokenApprovalAddress } from "../constants";
 
 // card per feature
 const CreateAACard = () => {
@@ -42,7 +42,7 @@ const CreateAACard = () => {
       const erc20 = new ethers.Contract(
         tokenApprovalAddress,
         ERC20ABI,
-        ethers.getDefaultProvider(chainId)
+        appStore.provider
       );
       console.log("erc20 contract", erc20);
       const balanceOf = await erc20.balanceOf(builder.getSender());

@@ -34,6 +34,7 @@ export default class AppStore {
   attachment = "auto";
   transports = ["hybrid", "internal"];
   createCredential;
+  createCredentialId = "";
   publicKey;
 
   provider;
@@ -54,30 +55,32 @@ export default class AppStore {
   constructor(rootStore) {
     makeAutoObservable(this, { rootStore: false });
     this.rootStore = rootStore;
-    const alchemyAPIKey = process.env.REACT_APP_ALCHEMY_API_KEY;
-    const etherscanAPIKey = process.env.REACT_APP_ETHERSCAN_API_KEY;
-    console.log(
-      "alchemyAPIKey",
-      !!alchemyAPIKey,
-      "etherscanAPIKey",
-      !!etherscanAPIKey
-    );
-    this.provider =
-      alchemyAPIKey || etherscanAPIKey
-        ? ethers.getDefaultProvider(chainId, {
-            etherscan: etherscanAPIKey,
-            alchemy: alchemyAPIKey,
-          })
-        : ethers.getDefaultProvider(chainId);
-    console.log("provider", this.provider);
   }
 
   async initialize() {
     try {
+      const alchemyAPIKey = process.env.REACT_APP_ALCHEMY_API_KEY;
+      const etherscanAPIKey = process.env.REACT_APP_ETHERSCAN_API_KEY;
+      console.log(
+        "alchemyAPIKey",
+        !!alchemyAPIKey,
+        "etherscanAPIKey",
+        !!etherscanAPIKey
+      );
+      this.provider =
+        alchemyAPIKey || etherscanAPIKey
+          ? ethers.getDefaultProvider(chainId, {
+              etherscan: etherscanAPIKey,
+              alchemy: alchemyAPIKey,
+            })
+          : ethers.getDefaultProvider(chainId);
+      console.log("provider", this.provider);
+
       const passkey = localStorage.getItem("passkey");
       if (!passkey) {
         const { credential, publicKey } = await createPasskey(this.attachment);
         this.createCredential = credential;
+        this.createCredentialId = arrayBufferToHex(credential.rawId);
 
         const newPublicKey = castPublicKeyToJWKObject(publicKey);
         this.publicKey = newPublicKey;
@@ -85,7 +88,7 @@ export default class AppStore {
         const newCredential = {
           id: credential.id,
           type: credential.type,
-          rawId: arrayBufferToHex(credential.rawId),
+          rawId: this.createCredentialId,
           response: {
             attestationObject: arrayBufferToHex(
               credential.response.attestationObject
@@ -96,7 +99,7 @@ export default class AppStore {
           },
         };
         localStorage.setItem(
-          `passkey:${arrayBufferToHex(credential.rawId)}`,
+          `passkey:${this.createCredentialId}`,
           JSON.stringify({
             credential: newCredential,
             publicKey: newPublicKey,
@@ -104,7 +107,7 @@ export default class AppStore {
         );
         localStorage.setItem(
           "passkey",
-          JSON.stringify([`passkey:${arrayBufferToHex(credential.rawId)}`])
+          JSON.stringify([`passkey:${this.createCredentialId}`])
         );
       } else {
         const passkeyArray = JSON.parse(passkey);
@@ -121,12 +124,13 @@ export default class AppStore {
             ),
           },
         };
+        this.createCredentialId = passkeyObj.credential.rawId;
         this.publicKey = passkeyObj.publicKey;
 
         const accountItem = localStorage.getItem("account");
         if (accountItem) {
           const account = JSON.parse(accountItem);
-          console.log(account);
+          console.log("account", account);
           this.accountAddress = account.address;
           this.createAccountTxHash = account.txHash;
         }
@@ -159,6 +163,7 @@ export default class AppStore {
       this.transports,
       webAuthnValidatorAddress,
       this.createCredential,
+      this.createCredentialId,
       this.publicKey
     );
     this.signer = signer;
@@ -194,6 +199,7 @@ export default class AppStore {
         this.transports,
         webAuthnValidatorAddress,
         this.createCredential,
+        this.createCredentialId,
         this.publicKey
       );
       this.signer = signer;
@@ -226,6 +232,11 @@ export default class AppStore {
   }
 
   async getNewAccountBuilder() {
+    const passkey = localStorage.getItem("passkey");
+    console.log("passkey", passkey);
+    const passkeyArray = JSON.parse(passkey);
+    const passkeyObj = JSON.parse(localStorage.getItem(passkeyArray[0]));
+    console.log("passkeyObj", passkeyObj);
     if (!this.newAccountBuilder) {
       return this.createNewAccountBuilder();
     }

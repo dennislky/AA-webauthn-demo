@@ -12,7 +12,8 @@ import { ethers } from "ethers";
 
 import { CardActionButton } from "../components/CardActionButton";
 import { useStore } from "../stores";
-import { entryPointAddress } from "../constants";
+import { webAuthnValidatorAddress } from "../constants";
+import { keccak256 } from "ethers/lib/utils";
 
 // card per feature
 const EmailRecoveryCard = () => {
@@ -32,24 +33,44 @@ const EmailRecoveryCard = () => {
       setIsLoading(true);
       const builder = await appStore.getNewAccountBuilder();
 
+      const opHash = keccak256(
+        ethers.utils.defaultAbiCoder.encode(
+          ["address", "string"],
+          [appStore.accountAddress, email]
+        )
+      );
+      console.log("opHash", opHash);
+      const signData = await appStore.signer.sign(opHash);
+      const callData = ethers.utils.defaultAbiCoder.encode(
+        ["address", "string", "bytes"],
+        [appStore.accountAddress, email, signData]
+      );
+
+      const addRecoveryEmail = new ethers.utils.Interface([
+        "function bindEmail(bytes)",
+      ]);
+      const bindEmailCallData = addRecoveryEmail.encodeFunctionData(
+        "bindEmail",
+        [callData]
+      );
       const execute = new ethers.utils.Interface([
         "function execute(address,uint256,bytes)",
       ]);
       const executeCallData = execute.encodeFunctionData("execute", [
-        entryPointAddress,
+        webAuthnValidatorAddress, // entryPointAddress,
         0,
-        "0x",
+        bindEmailCallData,
       ]);
       builder.setCallData(executeCallData);
 
       const response = await appStore.client.sendUserOperation(builder);
       appStore.addRecoveryEmail(response.userOpHash, email);
 
-      // const userOperationEvent = await response.wait();
-      // console.log("userOperationEvent", userOperationEvent);
-      // if (userOperationEvent) {
-      //   appStore.showSnackBar("Recovery email added successfully!");
-      // }
+      const userOperationEvent = await response.wait();
+      console.log("userOperationEvent", userOperationEvent);
+      if (userOperationEvent) {
+        appStore.showSnackBar("Recovery email added successfully!");
+      }
     } catch (err) {
       console.error(err);
       appStore.showSnackBar(`${err.toString()}`);
