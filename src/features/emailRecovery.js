@@ -108,6 +108,7 @@ const EmailRecoveryCard = () => {
             }
             testId="add-recovery-email"
             loading={isLoading}
+            disabled={!!appStore.recoveryEmail}
           />
         </CardActions>
         {appStore.addRecoveryEmailTxHash && (

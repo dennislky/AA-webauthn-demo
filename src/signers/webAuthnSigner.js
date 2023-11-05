@@ -2,7 +2,11 @@ import { BigNumber } from "ethers";
 import { arrayify, defaultAbiCoder } from "ethers/lib/utils";
 import { utils } from "@passwordless-id/webauthn";
 
-import { castASN1SignatureToRawRS, uint8ArrayToHex } from "../utils";
+import {
+  castASN1SignatureToRawRS,
+  hexToArrayBuffer,
+  uint8ArrayToHex,
+} from "../utils";
 import { authenticate } from "../utils/webAuthn";
 
 export class WebAuthnSigner {
@@ -58,7 +62,7 @@ export class WebAuthnSigner {
     const challengeBuffer = utils.parseBase64url(challenge);
     const response = await authenticate(
       challengeBuffer,
-      this.credential.rawId,
+      hexToArrayBuffer(this.credentialId),
       this.transports
     );
     console.log("get credential", response.credential);

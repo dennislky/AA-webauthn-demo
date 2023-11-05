@@ -31,7 +31,7 @@ export default class AppStore {
   snackBarMessage = "";
   isInit = false;
 
-  attachment = "auto";
+  attachment = "both";
   transports = ["hybrid", "internal"];
   createCredential;
   createCredentialId = "";
@@ -244,6 +244,7 @@ export default class AppStore {
     const passkeyArray = JSON.parse(passkey);
     const passkeyObj = JSON.parse(sessionStorage.getItem(passkeyArray[0]));
     console.log("passkeyObj", passkeyObj);
+    console.log("newAccountBuilder", this.newAccountBuilder);
     if (!this.newAccountBuilder) {
       return this.createNewAccountBuilder();
     }

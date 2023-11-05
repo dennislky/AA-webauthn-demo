@@ -44,6 +44,7 @@ const SendRecoveryEmailCard = () => {
     };
     getPublicKey().then((publicKey) => {
       if (publicKey !== "0x") {
+        console.log("publicKey", publicKey);
         setRecoveredPublicKey(publicKey);
       }
     });
@@ -107,8 +108,8 @@ const SendRecoveryEmailCard = () => {
           appStore.accountAddress,
           appStore.createCredentialId
         );
-        console.log("publicKey", publicKey);
         setRecoveredPublicKey(publicKey);
+        console.log("recoveredPublicKey", recoveredPublicKey);
         await new Promise((r) => setTimeout(r, 2000));
       } while (recoveredPublicKey === "0x");
     } catch (err) {
@@ -135,6 +136,7 @@ const SendRecoveryEmailCard = () => {
             onClick={sendRecoveryEmail}
             testId="send-email"
             loading={isLoading}
+            disabled={recoveredPublicKey !== "0x"}
           />
         </CardActions>
         <CardContent sx={{ pb: 1 }}>
