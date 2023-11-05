@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Card, CardContent, CardActions, Typography } from "@mui/material";
 import { ethers, BigNumber } from "ethers";
@@ -21,6 +21,38 @@ const SendRecoveryEmailCard = () => {
   const accountEmail = appStore.recoveryEmail;
 
   const [isLoading, setIsLoading] = useState(false);
+  const [recoveredPublicKey, setRecoveredPublicKey] = useState("0x");
+
+  const webAuthn = useMemo(() => {
+    if (!appStore.provider) return;
+    return new ethers.Contract(
+      webAuthnValidatorAddress,
+      webAuthnABI,
+      appStore.provider
+    );
+  }, [appStore.provider]);
+
+  useEffect(() => {
+    const getPublicKey = async () => {
+      const publicKey = accountEmail
+        ? await webAuthn.publicKeys(
+            appStore.accountAddress,
+            appStore.createCredentialId
+          )
+        : "0x";
+      return publicKey;
+    };
+    getPublicKey().then((publicKey) => {
+      if (publicKey !== "0x") {
+        setRecoveredPublicKey(publicKey);
+      }
+    });
+  }, [
+    accountEmail,
+    appStore.accountAddress,
+    appStore.createCredentialId,
+    webAuthn,
+  ]);
 
   // feature logic
   const sendRecoveryEmail = async () => {
@@ -29,12 +61,6 @@ const SendRecoveryEmailCard = () => {
     }
     try {
       setIsLoading(true);
-
-      const webAuthn = new ethers.Contract(
-        webAuthnValidatorAddress,
-        webAuthnABI,
-        appStore.provider
-      );
       console.log("webAuthn contract", webAuthn);
       const email = await webAuthn.emails(appStore.accountAddress);
       console.log("email", email);
@@ -75,6 +101,16 @@ const SendRecoveryEmailCard = () => {
         "_blank"
       );
       // window.open(`mailto:${sendTo}?subject=${encodeData.slice(2)}`, "_blank");
+
+      do {
+        const publicKey = await webAuthn.publicKeys(
+          appStore.accountAddress,
+          appStore.createCredentialId
+        );
+        console.log("publicKey", publicKey);
+        setRecoveredPublicKey(publicKey);
+        await new Promise((r) => setTimeout(r, 2000));
+      } while (recoveredPublicKey === "0x");
     } catch (err) {
       console.error(err);
       appStore.showSnackBar(`${err.toString()}`);
@@ -101,6 +137,15 @@ const SendRecoveryEmailCard = () => {
             loading={isLoading}
           />
         </CardActions>
+        <CardContent sx={{ pb: 1 }}>
+          <Typography sx={{ fontSize: 16 }}>
+            {`Account Address: ${appStore.accountAddress}`}
+            <br />
+            {`Passkey ID: ${appStore.createCredentialId}`}
+            <br />
+            {`Public Key: ${recoveredPublicKey}`}
+          </Typography>
+        </CardContent>
       </Card>
     </>
   ) : null;

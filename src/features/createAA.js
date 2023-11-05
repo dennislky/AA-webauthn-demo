@@ -25,7 +25,7 @@ const CreateAACard = () => {
   // feature logic
   const createAccount = async () => {
     if (!isInit) {
-      appStore.showSnackBar("Please create passkey first");
+      appStore.showSnackBar("Please initialize passkey first");
     }
     try {
       setIsLoading(true);
