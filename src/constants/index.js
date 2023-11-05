@@ -26,12 +26,19 @@ export const sepoliaRpcUrl =
   "https://sepolia.infura.io/v3/b9794ad1ddf84dfb8c34d6bb5dca2001"; // "https://eth-sepolia.public.blastapi.io";
 export const bundlerUrl = "http://43.134.168.120:8089/rpc/bundler";
 export const paymasterUrl = "http://43.134.168.120:8089/rpc/1";
+export const recoveryEmailDestination = "lucilleshrock@hotmail.com";
 
 export const ERC20ABI = [
   // Read-Only Functions
   "function balanceOf(address owner) view returns (uint256)",
   "function decimals() view returns (uint8)",
   "function symbol() view returns (string)",
+];
+export const webAuthnABI = [
+  // Read-Only Functions
+  "function emails(address) view returns (string)",
+  "function recoveryNonce(address) view returns (uint256)",
+  "function publicKeys(address, string) view returns (bytes)",
 ];
 
 export const challenge = new Uint8Array([

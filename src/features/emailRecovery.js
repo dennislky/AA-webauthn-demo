@@ -125,6 +125,11 @@ const EmailRecoveryCard = () => {
                 </Link>
               </Typography>
             )}
+            {appStore.recoveryEmail && (
+              <Typography sx={{ fontSize: 16 }}>
+                {`Recovery Email: ${appStore.recoveryEmail}`}
+              </Typography>
+            )}
           </CardContent>
         )}
       </Card>

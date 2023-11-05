@@ -7,7 +7,12 @@ import { utils } from "@passwordless-id/webauthn";
 
 import { CardActionButton } from "../components/CardActionButton";
 import { useStore } from "../stores";
-import { chainId, webAuthnValidatorAddress } from "../constants";
+import {
+  chainId,
+  recoveryEmailDestination,
+  webAuthnABI,
+  webAuthnValidatorAddress,
+} from "../constants";
 
 // card per feature
 const SendRecoveryEmailCard = () => {
@@ -25,27 +30,22 @@ const SendRecoveryEmailCard = () => {
     try {
       setIsLoading(true);
 
-      const abi = [
-        "function emails(address) view returns (string)",
-        "function recoveryNonce(address) view returns (uint256)",
-        "function publicKeys(address, string) view returns (bytes)",
-      ];
       const webAuthn = new ethers.Contract(
         webAuthnValidatorAddress,
-        abi,
+        webAuthnABI,
         appStore.provider
       );
       console.log("webAuthn contract", webAuthn);
       const email = await webAuthn.emails(appStore.accountAddress);
-      console.log(email);
+      console.log("email", email);
       const nonce = await webAuthn.recoveryNonce(appStore.accountAddress);
-      console.log(BigNumber.from(nonce).toNumber());
-      console.log(appStore.createCredentialId);
+      console.log("nonce", BigNumber.from(nonce).toNumber());
+      console.log("passkeyId", appStore.createCredentialId);
       const publicKey = await webAuthn.publicKeys(
         appStore.accountAddress,
         appStore.createCredentialId
       );
-      console.log(publicKey);
+      console.log("publicKey", publicKey);
       const bufferX = Buffer.from(
         utils.parseBase64url(appStore.publicKey.x.toString())
       );
@@ -67,8 +67,14 @@ const SendRecoveryEmailCard = () => {
           appStore.createCredentialId,
         ]
       );
-      const sendTo = "wujinzhou@live.com";
-      window.open(`mailto:${sendTo}?subject=${encodeData.slice(2)}`, "_blank");
+      const sendTo = recoveryEmailDestination;
+      window.open(
+        `https://mail.google.com/mail/u/1/?view=cm&fs=1&tf=1&to=${sendTo}&su=${encodeData.slice(
+          2
+        )}`,
+        "_blank"
+      );
+      // window.open(`mailto:${sendTo}?subject=${encodeData.slice(2)}`, "_blank");
     } catch (err) {
       console.error(err);
       appStore.showSnackBar(`${err.toString()}`);

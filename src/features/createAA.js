@@ -57,6 +57,9 @@ const CreateAACard = () => {
       setIsLoading(false);
     }
   };
+  const resetAccount = async () => {
+    appStore.resetAccount();
+  };
 
   // render logic
   return isInit ? (
@@ -74,6 +77,11 @@ const CreateAACard = () => {
             testId="create-account"
             loading={isLoading}
             disabled={!!accountAddress}
+          />
+          <CardActionButton
+            buttonText="Reset Account"
+            onClick={resetAccount}
+            testId="reset-account"
           />
         </CardActions>
         {appStore.createAccountTxHash && (

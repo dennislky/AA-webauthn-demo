@@ -239,10 +239,10 @@ export default class AppStore {
   }
 
   async getNewAccountBuilder() {
-    const passkey = localStorage.getItem("passkey");
+    const passkey = sessionStorage.getItem("passkey");
     console.log("passkey", passkey);
     const passkeyArray = JSON.parse(passkey);
-    const passkeyObj = JSON.parse(localStorage.getItem(passkeyArray[0]));
+    const passkeyObj = JSON.parse(sessionStorage.getItem(passkeyArray[0]));
     console.log("passkeyObj", passkeyObj);
     if (!this.newAccountBuilder) {
       return this.createNewAccountBuilder();
@@ -302,14 +302,6 @@ export default class AppStore {
     this.client = undefined;
     this.initAccountBuilder = undefined;
     this.newAccountBuilder = undefined;
-    this.createAccountTxHash = "";
-    this.accountAddress = "";
-    this.accountBalances = [];
-
-    this.approvals = [];
-    this.transactions = [];
-    this.nftTransactions = [];
-    this.addRecoveryEmailTxHash = "";
 
     const passkey = sessionStorage.getItem("passkey");
     if (passkey) {
@@ -319,5 +311,18 @@ export default class AppStore {
       });
     }
     sessionStorage.removeItem("passkey");
+  }
+
+  resetAccount() {
+    this.accountAddress = "";
+    this.recoveryEmail = "";
+    this.accountBalances = [];
+    this.approvals = [];
+    this.transactions = [];
+    this.nftTransactions = [];
+    this.createAccountTxHash = "";
+    this.addRecoveryEmailTxHash = "";
+    localStorage.removeItem("account");
+    localStorage.removeItem("account:email");
   }
 }
