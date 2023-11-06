@@ -6,6 +6,7 @@ import {
   CardActions,
   Typography,
   Link,
+  TextField,
 } from "@mui/material";
 // import { ethers } from "ethers";
 
@@ -19,8 +20,11 @@ const CreateAACard = () => {
   const { appStore } = useStore();
   const isInit = appStore.isInit;
   const accountAddress = appStore.accountAddress;
+  const isAccountCreated =
+    localStorage.getItem("account") && !sessionStorage.getItem("account");
 
   const [isLoading, setIsLoading] = useState(false);
+  const [address, setAddress] = useState("");
 
   // feature logic
   const createAccount = async () => {
@@ -57,6 +61,21 @@ const CreateAACard = () => {
       setIsLoading(false);
     }
   };
+  const bindAccount = async () => {
+    if (!isInit) {
+      appStore.showSnackBar("Please initialize passkey first");
+    }
+    try {
+      setIsLoading(true);
+      appStore.restoreLocalAccount(address);
+      appStore.restoreLocalEmail();
+    } catch (err) {
+      console.error(err);
+      appStore.showSnackBar(`${err.toString()}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const resetAccount = async () => {
     appStore.resetAccount();
   };
@@ -67,16 +86,27 @@ const CreateAACard = () => {
       <Card variant="outlined" sx={{ minWidth: 275, borderRadius: 5 }}>
         <CardContent sx={{ pb: 1 }}>
           <Typography display="inline" sx={{ fontSize: 26 }}>
-            Create Account
+            AA Account
           </Typography>
         </CardContent>
         <CardActions sx={{ pl: 2, pr: 2, pb: 2 }}>
+          {isAccountCreated && (
+            <TextField
+              id="address"
+              label="Address"
+              variant="filled"
+              onChange={(event) => {
+                setAddress(event.target.value);
+              }}
+            />
+          )}
           <CardActionButton
-            buttonText="Create Account"
-            onClick={createAccount}
+            buttonText={isAccountCreated ? "Bind Account" : "Create Account"}
+            onClick={isAccountCreated ? bindAccount : createAccount}
             testId="create-account"
             loading={isLoading}
             disabled={!!accountAddress}
+            sx={{ ml: isAccountCreated ? 1 : 0 }}
           />
           <CardActionButton
             buttonText="Reset Account"

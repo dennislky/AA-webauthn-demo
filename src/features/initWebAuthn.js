@@ -75,7 +75,7 @@ const InitWebAuthnCard = () => {
           />
         </CardActions>
         {appStore.createCredentialId && (
-          <CardContent sx={{ pb: 1 }}>
+          <CardContent sx={{ pt: 0, pb: 1 }}>
             {appStore.createCredentialId && (
               <Typography sx={{ fontSize: 14 }}>
                 {`Passkey ID: ${appStore.createCredentialId}`}

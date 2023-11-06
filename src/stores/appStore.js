@@ -109,6 +109,8 @@ export default class AppStore {
           "passkey",
           JSON.stringify([`passkey:${this.createCredentialId}`])
         );
+        sessionStorage.removeItem("account");
+        sessionStorage.removeItem("account:email");
       } else {
         const passkeyArray = JSON.parse(passkey);
         const passkeyObj = JSON.parse(sessionStorage.getItem(passkeyArray[0]));
@@ -127,7 +129,7 @@ export default class AppStore {
         this.createCredentialId = passkeyObj.credential.rawId;
         this.publicKey = passkeyObj.publicKey;
       }
-      const accountItem = localStorage.getItem("account");
+      const accountItem = sessionStorage.getItem("account");
       if (accountItem) {
         const account = JSON.parse(accountItem);
         console.log("account", account);
@@ -135,7 +137,7 @@ export default class AppStore {
         this.createAccountTxHash = account.txHash;
       }
 
-      const accountEmail = localStorage.getItem("account:email");
+      const accountEmail = sessionStorage.getItem("account:email");
       if (accountEmail) {
         const email = JSON.parse(accountEmail);
         console.log("accountEmail", email);
@@ -255,6 +257,21 @@ export default class AppStore {
     this.accountAddress = address;
     this.createAccountTxHash = txHash;
     localStorage.setItem("account", JSON.stringify({ address, txHash }));
+    sessionStorage.setItem("account", JSON.stringify({ address, txHash }));
+  }
+
+  restoreLocalAccount(address) {
+    const accountItem = localStorage.getItem("account");
+    if (accountItem) {
+      const account = JSON.parse(accountItem);
+      console.log("local account", account);
+      if (account.address === address) {
+        this.accountAddress = account.address;
+        this.createAccountTxHash = account.txHash;
+      } else {
+        throw new Error("Account address mismatch");
+      }
+    }
   }
 
   updateAccountBalance(token, amount) {
@@ -281,6 +298,17 @@ export default class AppStore {
     this.recoveryEmail = email;
     this.addRecoveryEmailTxHash = txHash;
     localStorage.setItem("account:email", JSON.stringify({ email, txHash }));
+    sessionStorage.setItem("account:email", JSON.stringify({ email, txHash }));
+  }
+
+  restoreLocalEmail() {
+    const accountEmail = localStorage.getItem("account:email");
+    if (accountEmail) {
+      const email = JSON.parse(accountEmail);
+      console.log("local accountEmail", email);
+      this.recoveryEmail = email.email;
+      this.addRecoveryEmailTxHash = email.txHash;
+    }
   }
 
   showSnackBar(message) {
@@ -325,6 +353,8 @@ export default class AppStore {
     this.nftTransactions = [];
     this.createAccountTxHash = "";
     this.addRecoveryEmailTxHash = "";
+    sessionStorage.removeItem("account");
+    sessionStorage.removeItem("account:email");
     localStorage.removeItem("account");
     localStorage.removeItem("account:email");
   }
