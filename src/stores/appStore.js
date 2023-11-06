@@ -297,6 +297,8 @@ export default class AppStore {
     this.attachment = "auto";
     this.transports = ["hybrid", "internal"];
     this.createCredential = undefined;
+    this.createCredentialId = "";
+    this.publicKey = undefined;
 
     this.provider = undefined;
     this.signer = undefined;

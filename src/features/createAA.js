@@ -7,11 +7,11 @@ import {
   Typography,
   Link,
 } from "@mui/material";
-import { ethers } from "ethers";
+// import { ethers } from "ethers";
 
 import { CardActionButton } from "../components/CardActionButton";
 import { useStore } from "../stores";
-import { ERC20ABI, tokenApprovalAddress } from "../constants";
+// import { ERC20ABI, tokenApprovalAddress } from "../constants";
 
 // card per feature
 const CreateAACard = () => {
@@ -39,17 +39,17 @@ const CreateAACard = () => {
         appStore.showSnackBar("Account created successfully!");
       }
 
-      const erc20 = new ethers.Contract(
-        tokenApprovalAddress,
-        ERC20ABI,
-        appStore.provider
-      );
-      console.log("erc20 contract", erc20);
-      const balanceOf = await erc20.balanceOf(builder.getSender());
-      appStore.updateAccountBalance(
-        await erc20.symbol(),
-        ethers.utils.formatUnits(balanceOf, await erc20.decimals())
-      );
+      // const erc20 = new ethers.Contract(
+      //   tokenApprovalAddress,
+      //   ERC20ABI,
+      //   appStore.provider
+      // );
+      // console.log("erc20 contract", erc20);
+      // const balanceOf = await erc20.balanceOf(builder.getSender());
+      // appStore.updateAccountBalance(
+      //   await erc20.symbol(),
+      //   ethers.utils.formatUnits(balanceOf, await erc20.decimals())
+      // );
     } catch (err) {
       console.error(err);
       appStore.showSnackBar(`${err.toString()}`);
@@ -112,7 +112,7 @@ const CreateAACard = () => {
                 </Link>
               </Typography>
             )}
-            {appStore.accountBalances.length ? (
+            {/* {appStore.accountBalances.length ? (
               <Typography sx={{ fontSize: 16 }}>
                 {`Account Balance: ${appStore.accountBalances
                   .map((balance) => {
@@ -120,7 +120,7 @@ const CreateAACard = () => {
                   })
                   .join(", ")}`}
               </Typography>
-            ) : null}
+            ) : null} */}
           </CardContent>
         )}
       </Card>

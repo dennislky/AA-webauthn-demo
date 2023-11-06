@@ -1,6 +1,8 @@
 import { observer } from "mobx-react-lite";
-
 import { Card, CardContent, CardActions, Typography } from "@mui/material";
+import { BigNumber } from "ethers";
+import { defaultAbiCoder } from "ethers/lib/utils";
+import { utils } from "@passwordless-id/webauthn";
 
 import { CardActionButton } from "../components/CardActionButton";
 import { useStore } from "../stores";
@@ -11,6 +13,20 @@ const InitWebAuthnCard = () => {
   // mobx store
   const { appStore } = useStore();
   const isInit = appStore.isInit;
+
+  let bytes = "0x";
+  if (appStore.publicKey) {
+    const bufferX = Buffer.from(
+      utils.parseBase64url(appStore.publicKey.x.toString())
+    );
+    const bufferY = Buffer.from(
+      utils.parseBase64url(appStore.publicKey.y.toString())
+    );
+    bytes = defaultAbiCoder.encode(
+      ["uint256", "uint256"],
+      [BigNumber.from(bufferX), BigNumber.from(bufferY)]
+    );
+  }
 
   // feature logic
   const setAttachment = (attachment) => {
@@ -50,6 +66,7 @@ const InitWebAuthnCard = () => {
             buttonText="Initialize Passkey"
             onClick={initWebAuthn}
             testId="initialize-passkey"
+            disabled={!!appStore.createCredentialId}
           />
           <CardActionButton
             buttonText="Reset Passkey"
@@ -57,6 +74,20 @@ const InitWebAuthnCard = () => {
             testId="reset-passkey"
           />
         </CardActions>
+        {appStore.createCredentialId && (
+          <CardContent sx={{ pb: 1 }}>
+            {appStore.createCredentialId && (
+              <Typography sx={{ fontSize: 14 }}>
+                {`Passkey ID: ${appStore.createCredentialId}`}
+              </Typography>
+            )}
+            {appStore.publicKey && (
+              <Typography sx={{ fontSize: 14 }}>
+                {`Passkey Public Key: ${bytes}`}
+              </Typography>
+            )}
+          </CardContent>
+        )}
       </Card>
     </>
   );

@@ -108,8 +108,11 @@ const SendRecoveryEmailCard = () => {
           appStore.accountAddress,
           appStore.createCredentialId
         );
-        setRecoveredPublicKey(publicKey);
-        console.log("recoveredPublicKey", recoveredPublicKey);
+        if (publicKey !== "0x") {
+          setRecoveredPublicKey(publicKey);
+          console.log("recoveredPublicKey", recoveredPublicKey);
+          break;
+        }
         await new Promise((r) => setTimeout(r, 2000));
       } while (recoveredPublicKey === "0x");
     } catch (err) {
@@ -126,12 +129,12 @@ const SendRecoveryEmailCard = () => {
       <Card variant="outlined" sx={{ minWidth: 275, borderRadius: 5 }}>
         <CardContent sx={{ pb: 1 }}>
           <Typography display="inline" sx={{ fontSize: 26 }}>
-            Send Recovery Email
+            Send Email to Bind New Passkey
           </Typography>
         </CardContent>
         <CardActions sx={{ pl: 2, pr: 2, pb: 2 }}>
           <CardActionButton
-            buttonText="Send Recovery Email"
+            buttonText="Send Email"
             sx={{ ml: 1 }}
             onClick={sendRecoveryEmail}
             testId="send-email"
@@ -140,7 +143,7 @@ const SendRecoveryEmailCard = () => {
           />
         </CardActions>
         <CardContent sx={{ pb: 1 }}>
-          <Typography sx={{ fontSize: 16 }}>
+          <Typography sx={{ fontSize: 14 }}>
             {`Account Address: ${appStore.accountAddress}`}
             <br />
             {`Passkey ID: ${appStore.createCredentialId}`}
