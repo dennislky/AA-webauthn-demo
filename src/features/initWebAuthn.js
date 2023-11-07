@@ -36,7 +36,7 @@ const InitWebAuthnCard = () => {
     const result = await appStore.initialize();
     appStore.showSnackBar(
       result === true
-        ? "Passkey initialized successfully!"
+        ? "Credential initialized successfully!"
         : `${result.toString()}`
     );
   };
@@ -50,11 +50,11 @@ const InitWebAuthnCard = () => {
       <Card variant="outlined" sx={{ minWidth: 275, borderRadius: 5 }}>
         <CardContent sx={{ pb: 1 }}>
           <Typography display="inline" sx={{ fontSize: 26 }}>
-            Initialize Passkey
+            Initialize Credential
           </Typography>
           {isInit && (
             <Typography display="inline" sx={{ fontSize: 14, color: "blue" }}>
-              {" (Passkey Initialized)"}
+              {" (Credential Initialized)"}
             </Typography>
           )}
         </CardContent>
@@ -63,27 +63,27 @@ const InitWebAuthnCard = () => {
             setAttachment={setAttachment}
           />
           <CardActionButton
-            buttonText="Initialize Passkey"
+            buttonText="Initialize Credential"
             onClick={initWebAuthn}
-            testId="initialize-passkey"
+            testId="initialize-credential"
             disabled={!!appStore.createCredentialId}
           />
           <CardActionButton
-            buttonText="Reset Passkey"
+            buttonText="Reset Credential"
             onClick={resetAppStore}
-            testId="reset-passkey"
+            testId="reset-credential"
           />
         </CardActions>
         {appStore.createCredentialId && (
           <CardContent sx={{ pt: 0, pb: 1 }}>
             {appStore.createCredentialId && (
               <Typography sx={{ fontSize: 14 }}>
-                {`Passkey ID: ${appStore.createCredentialId}`}
+                {`Credential ID: ${appStore.createCredentialId}`}
               </Typography>
             )}
             {appStore.publicKey && (
               <Typography sx={{ fontSize: 14 }}>
-                {`Passkey Public Key: ${bytes}`}
+                {`Credential Public Key: ${bytes}`}
               </Typography>
             )}
           </CardContent>

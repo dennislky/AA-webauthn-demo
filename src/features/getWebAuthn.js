@@ -15,7 +15,9 @@ const GetWebAuthnCard = () => {
   const getWebAuthn = async () => {
     const result = await appStore.getWebAuthn();
     appStore.showSnackBar(
-      result === true ? "Passkey signed successfully!" : `${result.toString()}`
+      result === true
+        ? "Transaction signed successfully!"
+        : `${result.toString()}`
     );
   };
   const setTransports = (transports) => {
@@ -28,15 +30,15 @@ const GetWebAuthnCard = () => {
       <Card variant="outlined" sx={{ minWidth: 275, borderRadius: 5 }}>
         <CardContent sx={{ pb: 1 }}>
           <Typography display="inline" sx={{ fontSize: 26 }}>
-            Get Passkey
+            Get Credential
           </Typography>
         </CardContent>
         <CardActions sx={{ pl: 2, pr: 2, pb: 2 }}>
           <DemoAutocompleteTransports setTransports={setTransports} />
           <CardActionButton
-            buttonText="Get Passkey"
+            buttonText="Get Credential"
             onClick={getWebAuthn}
-            testId="get-passkey"
+            testId="get-credential"
           />
         </CardActions>
       </Card>

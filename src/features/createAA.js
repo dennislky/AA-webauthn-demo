@@ -29,7 +29,7 @@ const CreateAACard = () => {
   // feature logic
   const createAccount = async () => {
     if (!isInit) {
-      appStore.showSnackBar("Please initialize passkey first");
+      appStore.showSnackBar("Please initialize credential first");
     }
     try {
       setIsLoading(true);
@@ -63,7 +63,7 @@ const CreateAACard = () => {
   };
   const bindAccount = async () => {
     if (!isInit) {
-      appStore.showSnackBar("Please initialize passkey first");
+      appStore.showSnackBar("Please initialize credential first");
     }
     try {
       setIsLoading(true);

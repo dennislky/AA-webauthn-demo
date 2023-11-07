@@ -67,7 +67,7 @@ const SendRecoveryEmailCard = () => {
       console.log("email", email);
       const nonce = await webAuthn.recoveryNonce(appStore.accountAddress);
       console.log("nonce", BigNumber.from(nonce).toNumber());
-      console.log("passkeyId", appStore.createCredentialId);
+      console.log("credentialId", appStore.createCredentialId);
       const publicKey = await webAuthn.publicKeys(
         appStore.accountAddress,
         appStore.createCredentialId
@@ -129,7 +129,7 @@ const SendRecoveryEmailCard = () => {
       <Card variant="outlined" sx={{ minWidth: 275, borderRadius: 5 }}>
         <CardContent sx={{ pb: 1 }}>
           <Typography display="inline" sx={{ fontSize: 26 }}>
-            Send Email to Bind New Passkey
+            Send Email to Bind New Credential
           </Typography>
         </CardContent>
         <CardActions sx={{ pl: 2, pr: 2, pb: 2 }}>
@@ -146,7 +146,7 @@ const SendRecoveryEmailCard = () => {
           <Typography sx={{ fontSize: 14 }}>
             {`Account Address: ${appStore.accountAddress}`}
             <br />
-            {`Passkey ID: ${appStore.createCredentialId}`}
+            {`Credential ID: ${appStore.createCredentialId}`}
             <br />
             {`Public Key: ${recoveredPublicKey}`}
           </Typography>

@@ -50,7 +50,7 @@ export const createPasskey = async (attachment) => {
       publicKey: publicKeyCredentialCreationOptions,
     });
     if (!credential) {
-      throw new Error("Failed to create passkey");
+      throw new Error("Failed to create credential");
     }
     /* PublicKeyCredential {
         // id: The ID for the newly generated credential; it will be used to identify the credential when authenticating the user. 

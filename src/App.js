@@ -39,7 +39,7 @@ export default function Dashboard() {
         >
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Typography variant="h4" sx={{ mb: 4 }}>
-              OKX AA Passkey Demo
+              OKX AA WebAuthn Demo
             </Typography>
             <Grid container spacing={2}>
               <Grid item xs={12}>

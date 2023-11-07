@@ -242,10 +242,10 @@ export default class AppStore {
 
   async getNewAccountBuilder() {
     const passkey = sessionStorage.getItem("passkey");
-    console.log("passkey", passkey);
+    console.log("credential", passkey);
     const passkeyArray = JSON.parse(passkey);
     const passkeyObj = JSON.parse(sessionStorage.getItem(passkeyArray[0]));
-    console.log("passkeyObj", passkeyObj);
+    console.log("credentialObj", passkeyObj);
     console.log("newAccountBuilder", this.newAccountBuilder);
     if (!this.newAccountBuilder) {
       return this.createNewAccountBuilder();
